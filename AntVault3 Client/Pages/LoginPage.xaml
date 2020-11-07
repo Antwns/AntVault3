@@ -1,0 +1,45 @@
+﻿<Page x:Class="AntVault3_Client.Pages.LoginPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:gif="http://wpfanimatedgif.codeplex.com"
+      xmlns:local="clr-namespace:AntVault3_Client.Pages"
+      mc:Ignorable="d"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="LoginPage" Loaded="Page_Loaded">
+    <Page.Resources>
+        <Style x:Key="Minecraft">
+            <Setter Property="TextElement.FontFamily" Value="Resources/Minecraft"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="Black">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="32*"/>
+            <ColumnDefinition Width="32*"/>
+            <ColumnDefinition Width="32*"/>
+            <ColumnDefinition Width="32*"/>
+            <ColumnDefinition Width="11*"/>
+            <ColumnDefinition Width="21*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="60*"/>
+            <RowDefinition Height="54*"/>
+            <RowDefinition Height="41*"/>
+            <RowDefinition Height="41*"/>
+            <RowDefinition Height="41*"/>
+            <RowDefinition Height="41*"/>
+            <RowDefinition Height="41*"/>
+            <RowDefinition Height="41*"/>
+            <RowDefinition Height="40*"/>
+        </Grid.RowDefinitions>
+        <Image x:Name="LoginBackground" gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources/LoginMenuBg.gif" gif:ImageBehavior.AutoStart="True" Grid.ColumnSpan="6" Grid.RowSpan="10" Stretch="None"/>
+        <TextBox x:Name="UsernameTextBox" Grid.Column="1" Grid.Row="6" TextWrapping="Wrap" Text="Username" BorderBrush="White" BorderThickness="3" Background="{x:Null}" Foreground="White" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseEnter="UsernameTextBox_MouseEnter" MouseLeave="UsernameTextBox_MouseLeave" SelectionBrush="#FF496E8B" FontFamily="/AntVault3 Client;component/Resources/#Minecraft"/>
+        <PasswordBox x:Name="PasswordTextBox" Grid.Column="3" Grid.Row="6" BorderThickness="3" BorderBrush="White" Foreground="White" Background="{x:Null}" FontSize="20" PasswordChar="*" Password="Password" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" MouseEnter="PasswordTextBox_MouseEnter" MouseLeave="PasswordTextBox_MouseLeave" SelectionBrush="#FF496E8B"/>
+        <Button x:Name="ConnectButton" Content="Connect" Grid.Column="2" Grid.Row="8" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Click="ConnectButton_Click" Background="{x:Null}"/>
+        <Label x:Name="StatusLabel" x:FieldModifier="public" Content="Connecting...." Margin="0" Foreground="White" FontSize="20" Loaded="StatusLabel_Loaded" Grid.ColumnSpan="6" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" VerticalContentAlignment="Center" Padding="0"/>
+        <Image Source="pack://application:,,,/Resources/BellWithCheckmark.png" x:Name="MusicButton" Grid.Column="4" Margin="0" Grid.Row="1" MouseLeftButtonDown="MusicButton_MouseLeftButtonDown"/>
+    </Grid>
+</Page>

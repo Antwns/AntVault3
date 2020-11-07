@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntVault3 Server", "AntVault3 Server\AntVault3 Server.csproj", "{B74F8F53-D81C-4332-A5F7-7C27E557D1CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntVault3 Client", "AntVault3 Client\AntVault3 Client.csproj", "{49B32499-1E0D-4549-A3D2-5D3506FA2F99}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B74F8F53-D81C-4332-A5F7-7C27E557D1CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B74F8F53-D81C-4332-A5F7-7C27E557D1CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B74F8F53-D81C-4332-A5F7-7C27E557D1CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B74F8F53-D81C-4332-A5F7-7C27E557D1CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B32499-1E0D-4549-A3D2-5D3506FA2F99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B32499-1E0D-4549-A3D2-5D3506FA2F99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B32499-1E0D-4549-A3D2-5D3506FA2F99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B32499-1E0D-4549-A3D2-5D3506FA2F99}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {334BEBDE-289D-441D-BF16-83F671F3BFA4}
+	EndGlobalSection
+EndGlobal
