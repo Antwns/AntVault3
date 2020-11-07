@@ -223,7 +223,7 @@ namespace AntVault3_Server.ServerWorkers
                 AuxiliaryServerWorker.WriteInfo("Custom login screen detected");
                 if(Sessions.Any(Sess => Sess.IpPort.Equals(IpPort)) == false)
                 {
-                    AntVaultServer.Send(IpPort, "/NewLoginScreen");
+                    Task.Run(()=>AntVaultServer.Send(IpPort, "/NewLoginScreen"));
                     MemoryStream NewServerLoginScreenStream = new MemoryStream(File.ReadAllBytes(ServerLoginScreen));
                     AntVaultServer.Send(IpPort, NewServerLoginScreenStream.Length, NewServerLoginScreenStream);
                     AuxiliaryServerWorker.WriteOK("Custom login screen sent to " + IpPort);
@@ -250,7 +250,7 @@ namespace AntVault3_Server.ServerWorkers
                 //Send msg that the client shuold enter UpdateThemeMode and then send the new theme over a stream
                 if (Sessions.Any(Sess => Sess.IpPort.Equals(IpPort)) == false)
                 {
-                    AntVaultServer.Send(IpPort, "/NewTheme");
+                    Task.Run(()=>AntVaultServer.Send(IpPort, "/NewTheme"));
                     MemoryStream NewServerThemeStream = new MemoryStream(File.ReadAllBytes(ServerTheme));
                     AntVaultServer.Send(IpPort, NewServerThemeStream.Length, NewServerThemeStream);
                     AuxiliaryServerWorker.WriteOK("Custom theme sent to " + IpPort);
