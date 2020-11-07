@@ -17,7 +17,7 @@ namespace AntVault3_Client
     /// </summary>
     public partial class App : Application
     {
-        public static WatsonTcpClient AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
+        internal static WatsonTcpClient AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
         static bool HasSetupEvents = false;
 
         public static async Task ConnectAsync()
@@ -30,6 +30,8 @@ namespace AntVault3_Client
                 AntVaultClient.Keepalive.TcpKeepAliveInterval = 5;
                 AntVaultClient.Keepalive.TcpKeepAliveRetryCount = 5;
                 AntVaultClient.Keepalive.TcpKeepAliveTime = 5;
+                AntVaultClient.Settings.Logger = WriteToLog;
+                AntVaultClient.Events.ExceptionEncountered += Events_ExceptionEncountered;
                 AntVaultClient.Events.MessageReceived += MainClientWorker.Events_MessageReceivedAsync;
                 HasSetupEvents = true;
                 Console.WriteLine("Events setup complete");
@@ -42,19 +44,34 @@ namespace AntVault3_Client
             {
                 Console.WriteLine("Could not connect to the server due to " + exc);
             }
-            if(AntVaultClient.Connected == true)
+            try
             {
-                await Task.Run(() => AntVaultClient.Send("/ServerStatus?"));
-            }
-            else
-            {
-                Application.Current.Dispatcher.Invoke(() =>
+                if (AntVaultClient.Connected == true)
                 {
-                    WindowController.LoginPage.StatusLabel.Content = "ERROR-Server offline, try to Vault later.";
-                });
-                await Task.Delay(10000);
-                await Task.Run(() => ConnectAsync());
+                    await Task.Run(() => AntVaultClient.Send("/ServerStatus?"));
+                }
+                else
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        WindowController.LoginPage.StatusLabel.Content = "ERROR-Server offline, try to Vault later.";
+                    });
+                    await Task.Delay(10000);
+                    await Task.Run(() => ConnectAsync());
+                }
             }
+            catch
+            {
+                Console.WriteLine("Client could not be used");
+            }
+        }
+
+        private static void Events_ExceptionEncountered(object sender, WatsonTcp.ExceptionEventArgs e)
+        {
+            WriteToLog("Json:");
+            WriteToLog(e.Json);
+            WriteToLog("ExceptionL");
+            WriteToLog(e.Exception.ToString());
         }
 
         internal static void WriteToLog(string LogEntry)
