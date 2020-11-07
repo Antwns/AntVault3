@@ -231,9 +231,9 @@ namespace AntVault3_Server.ServerWorkers
             }
         }
 
-        private static void UpdateTheme(string IpPort)
+        private static void UpdateTheme(string IpPortC)
         {
-            AuxiliaryServerWorker.WriteInfo(IpPort + " requested the current server theme");
+            AuxiliaryServerWorker.WriteInfo(IpPortC + " requested the current server theme");
             byte[] ServerThemeBytes = File.ReadAllBytes(ServerTheme);
             MemoryStream DefaultServerThemeStream = new MemoryStream(Convert.ToInt32(Properties.Resources.ServerTheme.Length));
             Properties.Resources.ServerTheme.CopyTo(DefaultServerThemeStream);
@@ -241,19 +241,19 @@ namespace AntVault3_Server.ServerWorkers
             {
                 AuxiliaryServerWorker.WriteInfo("Default theme detected");
                 //Send msg that the client should use the default theme
-                AntVaultServer.Send(IpPort, "/DefaultTheme");
+                AntVaultServer.Send(IpPortC, "/DefaultTheme");
                 AuxiliaryServerWorker.WriteOK("No theme sent");
             }
             else
             {
                 AuxiliaryServerWorker.WriteInfo("Custom theme detected");
                 //Send msg that the client shuold enter UpdateThemeMode and then send the new theme over a stream
-                if (Sessions.Any(Sess => Sess.IpPort.Equals(IpPort)) == false)
+                if (Sessions.Any(Sess => Sess.IpPort.Equals(IpPortC)) == false)
                 {
-                    Task.Run(()=>AntVaultServer.Send(IpPort, "/NewTheme"));
+                    Task.Run(()=>AntVaultServer.Send(IpPortC, "/NewTheme"));
                     MemoryStream NewServerThemeStream = new MemoryStream(File.ReadAllBytes(ServerTheme));
-                    AntVaultServer.Send(IpPort, NewServerThemeStream.Length, NewServerThemeStream);
-                    AuxiliaryServerWorker.WriteOK("Custom theme sent to " + IpPort);
+                    AntVaultServer.Send(IpPortC, NewServerThemeStream.Length, NewServerThemeStream);
+                    AuxiliaryServerWorker.WriteOK("Custom theme sent to " + IpPortC);
                 }
             }
         }
