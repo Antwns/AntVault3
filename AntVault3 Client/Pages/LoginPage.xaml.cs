@@ -33,7 +33,7 @@ namespace AntVault3_Client.Pages
         private void StatusLabel_Loaded(object sender, RoutedEventArgs e)
         {
             Task.Run(()=>LoginAnimations.MoveLabel(StatusLabel));
-            Task.Run(()=>App.ConnectAsync());
+            Task.Run(()=>App.Connect());
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

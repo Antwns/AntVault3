@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using WatsonTcp;
 
@@ -40,7 +39,8 @@ namespace AntVault3_Server.ServerWorkers
                 AntVaultServer.Keepalive.TcpKeepAliveInterval = 5;
                 AntVaultServer.Keepalive.TcpKeepAliveRetryCount = 5;
                 AntVaultServer.Keepalive.TcpKeepAliveTime = 5;
-                AntVaultServer.Events.StreamReceived += Events_StreamReceived;
+                AntVaultServer.Settings.Logger = AuxiliaryServerWorker.WriteDebug;
+                AntVaultServer.Events.ExceptionEncountered += Events_ExceptionEncountered;
                 AntVaultServer.Events.MessageReceived += Events_MessageReceived;
                 SetUpEvents = true;
                 AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
@@ -62,6 +62,11 @@ namespace AntVault3_Server.ServerWorkers
             {
                 AuxiliaryServerWorker.WriteError("Server could not be started due to " + exc);
             }
+        }
+
+        private static void Events_ExceptionEncountered(object sender, ExceptionEventArgs e)
+        {
+            AuxiliaryServerWorker.WriteError(e.Exception.ToString());
         }
 
         private static void CheckServerLoginScreen()
@@ -169,11 +174,6 @@ namespace AntVault3_Server.ServerWorkers
             {
                 AuxiliaryServerWorker.WriteInfo("One or more errors were met during the load process, please theck the integrity of the database or delete it to generate a new one with default values");
             }
-        }
-
-        private static void Events_StreamReceived(object sender, StreamReceivedFromClientEventArgs e)
-        {
-            AuxiliaryServerWorker.WriteDebug(AuxiliaryServerWorker.GetStringFromBytes(e.Data));
         }
 
         private static void Events_MessageReceived(object sender, MessageReceivedFromClientEventArgs e)

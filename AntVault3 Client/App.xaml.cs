@@ -20,7 +20,7 @@ namespace AntVault3_Client
         internal static WatsonTcpClient AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
         static bool HasSetupEvents = false;
 
-        public static async Task ConnectAsync()
+        public static void Connect()
         {
             if (HasSetupEvents == false)
             {
@@ -48,7 +48,7 @@ namespace AntVault3_Client
             {
                 if (AntVaultClient.Connected == true)
                 {
-                    await Task.Run(() => AntVaultClient.Send("/ServerStatus?"));
+                    Task.Run(() => AntVaultClient.Send("/ServerStatus?"));
                 }
                 else
                 {
@@ -56,8 +56,8 @@ namespace AntVault3_Client
                     {
                         WindowController.LoginPage.StatusLabel.Content = "ERROR-Server offline, try to Vault later.";
                     });
-                    await Task.Delay(10000);
-                    await Task.Run(() => ConnectAsync());
+                    Thread.Sleep(1000);
+                    Task.Run(() => Connect());
                 }
             }
             catch
@@ -70,7 +70,7 @@ namespace AntVault3_Client
         {
             WriteToLog("Json:");
             WriteToLog(e.Json);
-            WriteToLog("ExceptionL");
+            WriteToLog("Exception:");
             WriteToLog(e.Exception.ToString());
         }
 
