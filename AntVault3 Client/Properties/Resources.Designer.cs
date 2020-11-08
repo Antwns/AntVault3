@@ -70,7 +70,7 @@ namespace AntVault3_Client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /IP AntMax.ddns.net\
+        ///   Looks up a localized string similar to /IP AntVault.ddns.net\
         ////Port 25566\.
         /// </summary>
         internal static string DefaultConfig {

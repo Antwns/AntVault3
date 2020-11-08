@@ -122,7 +122,7 @@
     <value>..\resources\casetteswap.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="DefaultConfig" xml:space="preserve">
-    <value>/IP AntMax.ddns.net\
+    <value>/IP AntVault.ddns.net\
 /Port 25566\</value>
   </data>
   <data name="Hyper" type="System.Resources.ResXFileRef, System.Windows.Forms">

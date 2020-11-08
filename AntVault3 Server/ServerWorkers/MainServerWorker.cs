@@ -33,7 +33,7 @@ namespace AntVault3_Server.ServerWorkers
 
         internal static void StartServer()
         {
-            if(SetUpEvents == false)
+            if (SetUpEvents == false)
             {
                 AntVaultServer.Keepalive.EnableTcpKeepAlives = true;
                 AntVaultServer.Keepalive.TcpKeepAliveInterval = 5;
@@ -44,6 +44,18 @@ namespace AntVault3_Server.ServerWorkers
                 AntVaultServer.Events.MessageReceived += Events_MessageReceived;
                 SetUpEvents = true;
                 AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
+                #region Testing
+                Task.Run(() =>
+                {
+                    System.Threading.EventWaitHandle waitHandle = new System.Threading.EventWaitHandle(false, System.Threading.EventResetMode.AutoReset, null);
+                    bool waitHandleSignal = false;
+                    do
+                    {
+                        waitHandleSignal = waitHandle.WaitOne(1000);
+                    }
+                    while (!waitHandleSignal);
+                });
+                #endregion
             }
             AuxiliaryServerWorker.WriteInfo("Reading server status from config...");
             ServerStatus = AuxiliaryServerWorker.ReadFromConfig("Status");
