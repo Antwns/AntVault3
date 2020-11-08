@@ -12,7 +12,7 @@ namespace AntVault3_Server.ServerWorkers
 {
     class MainServerWorker
     {
-        internal static WatsonTcpServer AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
+        internal static WatsonTcpServer AntVaultServer = null;
 
         internal static string DatabaseDir = AppDomain.CurrentDomain.BaseDirectory + "AntVaultServer.users";
         internal static string UserDirectories = AppDomain.CurrentDomain.BaseDirectory + "UserDirectories";
@@ -33,6 +33,7 @@ namespace AntVault3_Server.ServerWorkers
 
         internal static void StartServer()
         {
+            AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
             if (SetUpEvents == false)
             {
                 AntVaultServer.Keepalive.EnableTcpKeepAlives = true;
@@ -236,7 +237,7 @@ namespace AntVault3_Server.ServerWorkers
                 {
                     Task.Run(()=>AntVaultServer.Send(IpPort, "/NewLoginScreen"));
                     MemoryStream NewServerLoginScreenStream = new MemoryStream(File.ReadAllBytes(ServerLoginScreen));
-                    AntVaultServer.Send(IpPort, NewServerLoginScreenStream.Length, NewServerLoginScreenStream);
+                    AntVaultServer.Send(IpPort, NewServerLoginScreenStream.ToArray());
                     AuxiliaryServerWorker.WriteOK("Custom login screen sent to " + IpPort);
                 }
             }
@@ -263,7 +264,7 @@ namespace AntVault3_Server.ServerWorkers
                 {
                     Task.Run(()=>AntVaultServer.Send(IpPortC, "/NewTheme"));
                     MemoryStream NewServerThemeStream = new MemoryStream(File.ReadAllBytes(ServerTheme));
-                    AntVaultServer.Send(IpPortC, NewServerThemeStream.Length, NewServerThemeStream);
+                    AntVaultServer.Send(IpPortC, NewServerThemeStream.ToArray());
                     AuxiliaryServerWorker.WriteOK("Custom theme sent to " + IpPortC);
                 }
             }

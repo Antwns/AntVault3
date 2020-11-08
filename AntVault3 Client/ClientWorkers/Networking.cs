@@ -8,11 +8,12 @@ namespace AntVault3_Client.ClientWorkers
 {
     class Networking
     {
-        internal static WatsonTcpClient AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
+        internal static WatsonTcpClient AntVaultClient = null;
         static bool HasSetupEvents = false;
 
         internal static void Connect()
         {
+            AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
             if (HasSetupEvents == false)
             {
                 AntVaultClient.Settings.Logger = WriteToLog;
