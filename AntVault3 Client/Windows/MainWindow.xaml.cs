@@ -16,7 +16,7 @@ namespace AntVault3_Client.Windows
 
         private void ClientMainWindow_Closed(object sender, EventArgs e)
         {
-            App.Disconnect();
+            Networking.Disconnect();
             Application.Current.Shutdown();
         }
 
@@ -29,11 +29,11 @@ namespace AntVault3_Client.Windows
 
         private void ClientMainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if(App.AntVaultClient.Connected == true)
+            if(Networking.AntVaultClient.Connected == true)
             {
                 try
                 {
-                    App.AntVaultClient.Send("/Disconnect -Content closed the app;");
+                    Networking.AntVaultClient.Send("/Disconnect -Content closed the app;");
                 }
                 catch (Exception exc)
                 {

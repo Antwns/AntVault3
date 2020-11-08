@@ -80,7 +80,7 @@ namespace AntVault3_Client.ClientWorkers
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     WindowController.LoginPage.StatusLabel.Content = ServerStatus;
-                    App.AntVaultClient.Send("/ServerTheme?");
+                    Networking.AntVaultClient.Send("/ServerTheme?");
                 });
 
             }
@@ -100,7 +100,7 @@ namespace AntVault3_Client.ClientWorkers
                     Task.Run(() => AssignNewTheme(e.Data));
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        App.AntVaultClient.Send("/ServerLoginScreen?");
+                        Networking.AntVaultClient.Send("/ServerLoginScreen?");
                     });
                 }
             }
@@ -323,7 +323,7 @@ namespace AntVault3_Client.ClientWorkers
         internal static void SendMessage(string MessageString)
         {
             Console.WriteLine("[Debug]: Sent message {" + MessageString + "}");
-            App.AntVaultClient.Send("/Message -Content " + MessageString + ";");
+            Networking.AntVaultClient.Send("/Message -Content " + MessageString + ";");
         }
 
         private static void AssignOnlinePictures(byte[] Data)
@@ -395,7 +395,7 @@ namespace AntVault3_Client.ClientWorkers
 
         internal static void Events_ExceptionEncountered(object sender, WatsonTcp.ExceptionEventArgs e)
         {
-            App.WriteToLog(e.Json);
+            Networking.WriteToLog(e.Json);
         }
     }
 }

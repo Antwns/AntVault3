@@ -6,7 +6,7 @@ using System.Windows.Input;
 using System;
 using System.IO;
 using System.Windows.Media;
-using WpfAnimatedGif;
+using AntVault3_Client.ClientWorkers;
 using System.Windows.Media.Imaging;
 
 namespace AntVault3_Client.Pages
@@ -32,8 +32,8 @@ namespace AntVault3_Client.Pages
 
         private void StatusLabel_Loaded(object sender, RoutedEventArgs e)
         {
-            Task.Run(()=>LoginAnimations.MoveLabel(StatusLabel));
-            Task.Run(()=>App.Connect());
+            Task.Run(()=> LoginAnimations.MoveLabel(StatusLabel));
+            Task.Run(()=> Networking.Connect());
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -75,7 +75,7 @@ namespace AntVault3_Client.Pages
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            App.AntVaultClient.Send("/Login -U " + UsernameTextBox.Text + " -P " + PasswordTextBox.Password + ";");
+            Networking.AntVaultClient.Send("/Login -U " + UsernameTextBox.Text + " -P " + PasswordTextBox.Password + ";");
         }
 
         internal static void LoginMenuPlayer(bool Play, byte[] BytesToPlay)
