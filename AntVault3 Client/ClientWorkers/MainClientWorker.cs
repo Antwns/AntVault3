@@ -36,7 +36,7 @@ namespace AntVault3_Client.ClientWorkers
         internal static Collection<string> CurrentStatuses = new Collection<string>();
         internal static Collection<Bitmap> CurrentProfilePictures = new Collection<Bitmap>();
 
-        internal static void Events_MessageReceivedAsync(object sender, MessageReceivedFromServerEventArgs e)
+        internal static void Events_MessageReceived(object sender, MessageReceivedFromServerEventArgs e)
         {
             string MessageString = AuxiliaryClientWorker.GetStringFromBytes(e.Data);
             #region debugging

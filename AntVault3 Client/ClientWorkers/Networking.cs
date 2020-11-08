@@ -23,13 +23,16 @@ namespace AntVault3_Client.ClientWorkers
                 AntVaultClient.Keepalive.TcpKeepAliveTime = 1;
                 AntVaultClient.Settings.Logger = WriteToLog;
                 AntVaultClient.Events.ExceptionEncountered += Events_ExceptionEncountered;
-                AntVaultClient.Events.MessageReceived += MainClientWorker.Events_MessageReceivedAsync;
+                AntVaultClient.Events.MessageReceived += MainClientWorker.Events_MessageReceived;
                 HasSetupEvents = true;
                 Console.WriteLine("Events setup complete");
             }
             try
             {
-                AntVaultClient.Start();
+                if (AntVaultClient.Connected == false)
+                {
+                    AntVaultClient.Start();
+                }
             }
             catch (Exception exc)
             {
