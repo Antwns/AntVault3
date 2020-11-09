@@ -24,7 +24,6 @@ namespace AntVault3_Client.Pages
         public LoginPage()
         {
             InitializeComponent();
-            App.Client = new ClientNetworking();
         }
         internal static MediaPlayer LoginMenuMediaPlayer = new MediaPlayer()
         {
@@ -39,7 +38,7 @@ namespace AntVault3_Client.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoginMenuPlayer(true, null);
-            Task.Run(() => App.Client.Connect());
+            Task.Run(() => MainClientWorker.Connect());
         }
 
         private void UsernameTextBox_MouseEnter(object sender, MouseEventArgs e)
@@ -76,7 +75,7 @@ namespace AntVault3_Client.Pages
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            ClientNetworking.AntVaultClient.Send("/Login -U " + UsernameTextBox.Text + " -P " + PasswordTextBox.Password + ";");
+            MainClientWorker.Send("/Login -U " + UsernameTextBox.Text + " -P " + PasswordTextBox.Password + ";");
         }
 
         internal static void LoginMenuPlayer(bool Play, byte[] BytesToPlay)
