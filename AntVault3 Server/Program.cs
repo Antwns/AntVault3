@@ -6,7 +6,7 @@ namespace AntVault3_Server
 {
     class Program
     {
-        internal static ServerNetworking Networking = null;
+        internal static MainServerWorker Networking = null;
         static void Main(string[] args)
         {
 
@@ -17,13 +17,13 @@ namespace AntVault3_Server
             {
                 if(Command.ToLower() == "/start")
                 {
-                    Networking = new ServerNetworking();
-                    ServerNetworking.StartServer();
+                    Networking = new MainServerWorker();
+                    MainServerWorker.Start();
                     Command = Console.ReadLine();
                 }
                 else if(Command.ToLower() == "/stop")
                 {
-                    ServerNetworking.StopServer();
+                    MainServerWorker.Stop();
                     Command = Console.ReadLine();
                 }
                 else if(Command.ToLower().StartsWith("/updatestatus"))

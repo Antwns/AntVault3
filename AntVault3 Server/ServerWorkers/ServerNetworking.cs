@@ -5,13 +5,13 @@ namespace AntVault3_Server.ServerWorkers
 {
     class ServerNetworking
     {
-        internal static WatsonTcpServer AntVaultServer = null;
+        internal WatsonTcpServer AntVaultServer = null;
 
-        static bool SetUpEvents = false;
+        bool SetUpEvents = false;
 
-        internal static string ServerStatus = null;
+        internal string ServerStatus = null;
 
-        internal static void StartServer()
+        internal void StartServer()
         {
             AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
             if (SetUpEvents == false)
@@ -20,10 +20,7 @@ namespace AntVault3_Server.ServerWorkers
                 AntVaultServer.Keepalive.TcpKeepAliveInterval = 1;
                 AntVaultServer.Keepalive.TcpKeepAliveTime = 1;
                 AntVaultServer.Settings.AcceptInvalidCertificates = true;
-                AntVaultServer.Settings.StreamBufferSize = 2048;
-                AntVaultServer.Settings.Logger = AuxiliaryServerWorker.WriteDebug;
                 AntVaultServer.Events.ExceptionEncountered += Events_ExceptionEncountered;
-                AntVaultServer.Events.MessageReceived += MainServerWorker.Events_MessageReceived;
                 SetUpEvents = true;
                 AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
             }
@@ -45,8 +42,7 @@ namespace AntVault3_Server.ServerWorkers
                 AuxiliaryServerWorker.WriteError("Server could not be started due to " + exc);
             }
         }
-
-        internal static void StopServer()
+        internal void StopServer()
         {
             try
             {
@@ -59,7 +55,7 @@ namespace AntVault3_Server.ServerWorkers
             }
         }
 
-        private static void Events_ExceptionEncountered(object sender, ExceptionEventArgs e)
+        private void Events_ExceptionEncountered(object sender, ExceptionEventArgs e)
         {
             AuxiliaryServerWorker.WriteError(e.Exception.ToString());
         }
