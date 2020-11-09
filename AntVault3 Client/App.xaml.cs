@@ -13,6 +13,7 @@ namespace AntVault3_Client
     /// </summary>
     public partial class App : Application
     {
+        internal static ClientNetworking Client = null;
         internal static FlowDocument SortFriendsList()
         {
             FlowDocument DocumentToReturn = new FlowDocument();

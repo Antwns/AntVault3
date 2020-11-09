@@ -65,6 +65,7 @@
     <Compile Include="Resources\Session.cs" />
     <Compile Include="ServerWorkers\AuxiliaryServerWorker.cs" />
     <Compile Include="ServerWorkers\MainServerWorker.cs" />
+    <Compile Include="ServerWorkers\ServerNetworking.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

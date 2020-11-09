@@ -33,7 +33,7 @@ namespace AntVault3_Client.Pages
         private void StatusLabel_Loaded(object sender, RoutedEventArgs e)
         {
             Task.Run(()=> LoginAnimations.MoveLabel(StatusLabel));
-            Task.Run(()=> Networking.Connect());
+            Task.Run(()=> ClientNetworking.Connect());
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -75,7 +75,7 @@ namespace AntVault3_Client.Pages
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            Networking.AntVaultClient.Send("/Login -U " + UsernameTextBox.Text + " -P " + PasswordTextBox.Password + ";");
+            ClientNetworking.AntVaultClient.Send("/Login -U " + UsernameTextBox.Text + " -P " + PasswordTextBox.Password + ";");
         }
 
         internal static void LoginMenuPlayer(bool Play, byte[] BytesToPlay)

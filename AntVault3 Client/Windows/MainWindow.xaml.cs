@@ -12,11 +12,13 @@ namespace AntVault3_Client.Windows
         public MainWindow()
         {
             InitializeComponent();
+
+            App.Client = new ClientNetworking();
         }
 
         private void ClientMainWindow_Closed(object sender, EventArgs e)
         {
-            Networking.Disconnect();
+            ClientNetworking.Disconnect();
             Application.Current.Shutdown();
         }
 
@@ -29,11 +31,11 @@ namespace AntVault3_Client.Windows
 
         private void ClientMainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if(Networking.AntVaultClient.Connected == true)
+            if(ClientNetworking.AntVaultClient.Connected == true)
             {
                 try
                 {
-                    Networking.AntVaultClient.Send("/Disconnect -Content closed the app;");
+                    ClientNetworking.AntVaultClient.Send("/Disconnect -Content closed the app;");
                 }
                 catch (Exception exc)
                 {

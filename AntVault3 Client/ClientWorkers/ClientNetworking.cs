@@ -6,7 +6,7 @@ using System.IO;
 
 namespace AntVault3_Client.ClientWorkers
 {
-    class Networking
+    class ClientNetworking
     {
         internal static WatsonTcpClient AntVaultClient = null;
         static bool HasSetupEvents = false;
