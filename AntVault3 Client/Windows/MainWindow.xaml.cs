@@ -12,8 +12,6 @@ namespace AntVault3_Client.Windows
         public MainWindow()
         {
             InitializeComponent();
-
-            App.Client = new ClientNetworking();
         }
 
         private void ClientMainWindow_Closed(object sender, EventArgs e)

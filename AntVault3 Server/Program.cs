@@ -6,6 +6,7 @@ namespace AntVault3_Server
 {
     class Program
     {
+        internal static ServerNetworking Networking = null;
         static void Main(string[] args)
         {
 
@@ -16,6 +17,7 @@ namespace AntVault3_Server
             {
                 if(Command.ToLower() == "/start")
                 {
+                    Networking = new ServerNetworking();
                     ServerNetworking.StartServer();
                     Command = Console.ReadLine();
                 }

@@ -24,6 +24,7 @@ namespace AntVault3_Client.Pages
         public LoginPage()
         {
             InitializeComponent();
+            App.Client = new ClientNetworking();
         }
         internal static MediaPlayer LoginMenuMediaPlayer = new MediaPlayer()
         {
@@ -33,12 +34,12 @@ namespace AntVault3_Client.Pages
         private void StatusLabel_Loaded(object sender, RoutedEventArgs e)
         {
             Task.Run(()=> LoginAnimations.MoveLabel(StatusLabel));
-            Task.Run(()=> ClientNetworking.Connect());
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoginMenuPlayer(true, null);
+            Task.Run(() => App.Client.Connect());
         }
 
         private void UsernameTextBox_MouseEnter(object sender, MouseEventArgs e)

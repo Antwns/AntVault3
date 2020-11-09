@@ -11,7 +11,7 @@ namespace AntVault3_Client.ClientWorkers
         internal static WatsonTcpClient AntVaultClient = null;
         static bool HasSetupEvents = false;
 
-        internal static void Connect()
+        internal void Connect()
         {
             AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
             if (HasSetupEvents == false)
