@@ -3,7 +3,6 @@ using WatsonTcp;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
-using System.Windows;
 
 namespace AntVault3_Client.ClientWorkers
 {

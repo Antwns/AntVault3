@@ -17,8 +17,8 @@ namespace AntVault3_Server.ServerWorkers
             if (SetUpEvents == false)
             {
                 AntVaultServer.Keepalive.EnableTcpKeepAlives = true;
-                AntVaultServer.Keepalive.TcpKeepAliveInterval = 1;
-                AntVaultServer.Keepalive.TcpKeepAliveTime = 1;
+                AntVaultServer.Keepalive.TcpKeepAliveInterval = 5;
+                AntVaultServer.Keepalive.TcpKeepAliveTime = 5;
                 AntVaultServer.Settings.AcceptInvalidCertificates = true;
                 AntVaultServer.Events.ExceptionEncountered += Events_ExceptionEncountered;
                 SetUpEvents = true;
