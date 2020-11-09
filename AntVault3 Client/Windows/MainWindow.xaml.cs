@@ -16,7 +16,7 @@ namespace AntVault3_Client.Windows
 
         private void ClientMainWindow_Closed(object sender, EventArgs e)
         {
-            ClientNetworking.Disconnect();
+            MainClientWorker.Disconnect();
             Application.Current.Shutdown();
         }
 

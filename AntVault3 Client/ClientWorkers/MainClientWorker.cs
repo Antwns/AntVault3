@@ -8,223 +8,32 @@ using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using WatsonTcp;
 using WpfAnimatedGif;
 
 namespace AntVault3_Client.ClientWorkers
 {
     public class MainClientWorker
     {
-        static string CurrentUser;
+        internal static ClientNetworking Client = new ClientNetworking();
+
+        internal static string CurrentUser;
+
+        internal static void Disconnect()
+        {
+            Client.Disconnect();
+        }
+
         static string CurrentStatus;
-        static string NewUser = "NewUser";
+        internal static string NewUser = "NewUser";
 
         static Bitmap CurrentProfilePicture;
-
-        static bool UserProfilePictureMode;
-        static bool UserFriendsListMode;
-        static bool OnlineUsersMode;
-        static bool OnlineProfilePicturesMode;
-        static bool NewOnlineUserMode;
-        static bool NewThemeMode;
-        static bool HasSetNewUser;
-        static bool NewLoginScreenMode;
 
         internal static Collection<string> CurrentFriendsList = new Collection<string>();
         internal static Collection<string> CurrentOnlineUsers = new Collection<string>();
         internal static Collection<string> CurrentStatuses = new Collection<string>();
         internal static Collection<Bitmap> CurrentProfilePictures = new Collection<Bitmap>();
 
-        internal static void Events_MessageReceived(object sender, MessageReceivedFromServerEventArgs e)
-        {
-            string MessageString = AuxiliaryClientWorker.GetStringFromBytes(e.Data);
-            #region debugging
-            if (MessageString.StartsWith("�PNG") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.Contains("WAVEfmt") == false && MessageString.Contains("GIF89a") == false)
-            {
-                Console.WriteLine("[Debug]: " + MessageString);
-            }
-            else if (MessageString.StartsWith("�PNG") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == true)
-            {
-                Console.WriteLine("[Collection]");
-            }
-            else if (MessageString.StartsWith("�PNG") == true && MessageString.Contains("System.Collections.ObjectModel.Collection") == false)
-            {
-                Console.WriteLine("[Image]");
-            }
-            else if (MessageString.Contains("WAVEfmt") == true && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.StartsWith("�PNG") == false)
-            {
-                Console.WriteLine("[Wav]");
-            }
-            else if (MessageString.Contains("GIF89a") == true && MessageString.Contains("WAVEfmt") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.StartsWith("�PNG") == false)
-            {
-                Console.WriteLine("[GIF]");
-            }
-            else
-            {
-                Console.WriteLine("[Unknown data format]");
-            }
-            #endregion
-            if (MessageString.StartsWith("/AcceptConnection"))
-            {
-                MessageBox.Show("Authentication successfull!" + Environment.NewLine + "Entering the vault...", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                Task.Run(() => OpenMainPage());
-            }
-            if (MessageString.StartsWith("/DenyConnection"))
-            {
-                MessageBox.Show("Authetincation failed, please revise the login information you have provided", "Login error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            if (MessageString.StartsWith("/ServerStatus"))
-            {
-                string ServerStatus = AuxiliaryClientWorker.GetElement(MessageString, "/ServerStatus ", ";");
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    WindowController.LoginPage.StatusLabel.Content = ServerStatus;
-                    ClientNetworking.AntVaultClient.Send("/ServerTheme?");
-                });
-
-            }
-            if (MessageString.StartsWith("/DefaultTheme"))
-            {
-                Console.WriteLine("Received default theme callback, will not try to update the track");
-            }
-            if (MessageString.StartsWith("/NewTheme") || NewThemeMode == true)
-            {
-                if (MessageString.StartsWith("/NewTheme"))
-                {
-                    NewThemeMode = true;
-                }
-                else
-                {
-                    NewThemeMode = false;
-                    Task.Run(() => AssignNewTheme(e.Data));
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        ClientNetworking.AntVaultClient.Send("/ServerLoginScreen?");
-                    });
-                }
-            }
-            if(MessageString.StartsWith("/DefaultLoginScreen"))
-            {
-                Console.WriteLine("Received default login screen callback, will not try to update");
-            }
-            if(MessageString.StartsWith("/NewLoginScreen") || NewLoginScreenMode == true)
-            {
-                if (MessageString.StartsWith("/NewLoginScreen") || NewLoginScreenMode == false)
-                {
-                    NewLoginScreenMode = true;
-                }
-                else
-                {
-                    NewLoginScreenMode = false;
-                    Task.Run(() => AssignNewLoginScreen(e.Data));
-                }
-            }
-            if (MessageString.StartsWith("/UserStringInfo"))
-            {
-                Task.Run(() => AssignUserInfo(MessageString));
-            }
-            if (MessageString.StartsWith("/UserProfilePictureMode") == true || UserProfilePictureMode == true)
-            {
-                if (MessageString.StartsWith("/UserProfilePictureMode") == true && UserProfilePictureMode == false)
-                {
-                    UserProfilePictureMode = true;
-                }
-                else
-                {
-                    UserProfilePictureMode = false;
-                    Task.Run(() => AssignProfilePicture(e.Data));
-                }
-            }
-            if (MessageString.StartsWith("/UserFriendsListMode") == true || UserFriendsListMode == true)
-            {
-                if (MessageString.StartsWith("/UserFriendsListMode") == true && UserFriendsListMode == false)
-                {
-                    UserFriendsListMode = true;
-                }
-                else
-                {
-                    UserFriendsListMode = false;
-                    Task.Run(() => AssingFriendsList(e.Data));
-                }
-            }
-            if (MessageString.StartsWith("/OnlineUsersListMode") == true || OnlineUsersMode == true)
-            {
-                if (MessageString.StartsWith("/OnlineUsersListMode") == true && OnlineUsersMode == false)
-                {
-                    OnlineUsersMode = true;
-                }
-                else
-                {
-                    OnlineUsersMode = false;
-                    Task.Run(() => AssignOnlineUsers(e.Data));
-                    Console.WriteLine("Sorting out friends list for " + CurrentUser + ", registering " + CurrentFriendsList.Count + " entries");
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        WindowController.MainPage.FriendsListTextBox.Document = App.SortFriendsList();
-                    });
-                }
-            }
-            if (MessageString.StartsWith("/OnlineProfilePicturesMode") == true || OnlineProfilePicturesMode == true)
-            {
-                if (MessageString.StartsWith("/OnlineProfilePicturesMode") == true && OnlineProfilePicturesMode == false)
-                {
-                    OnlineProfilePicturesMode = true;
-                }
-                else
-                {
-                    OnlineProfilePicturesMode = false;
-                    Task.Run(() => AssignOnlinePictures(e.Data));
-                    Console.WriteLine("Assigned list for online users");
-                }
-            }
-            if (MessageString.StartsWith("/NewUser") == true || NewOnlineUserMode == true)
-            {
-                try
-                {
-                    if(HasSetNewUser == false)
-                    {
-                        NewUser = AuxiliaryClientWorker.GetElement(MessageString, "-U ", " -S");
-                        Console.WriteLine("New user is " + NewUser);
-                        HasSetNewUser = true;
-                    }
-                }
-                catch
-                {
-                    Console.WriteLine("Could not grab new user's username successfully");
-                }
-                if (MessageString.StartsWith("/NewUser") == true && NewOnlineUserMode == false)
-                {
-                    NewOnlineUserMode = true;
-                    Task.Run(() => AssignNewOnlineUser(MessageString));
-                }
-                else
-                {
-                    NewOnlineUserMode = false;
-                    Task.Run(() => AssignNewOnlineUserProfilePicture(e.Data, NewUser));
-                    HasSetNewUser = false;
-                }
-            }
-            if (MessageString.StartsWith("/UserDisconnect"))
-            {
-                Task.Run(() => HadndleDisconnect(MessageString));
-            }
-            if (MessageString.StartsWith("/Message") == true)
-            {
-                Task.Run(() => HandleMessage(MessageString));
-            }
-        }
-        private static void HadndleDisconnect(string MessageString)
-        {
-            string UserToDisconnect = AuxiliaryClientWorker.GetElement(MessageString, "-U ", ";");
-            CurrentProfilePictures.Remove(CurrentProfilePictures[CurrentOnlineUsers.IndexOf(UserToDisconnect)]);
-            CurrentOnlineUsers.Remove(UserToDisconnect);
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                WindowController.MainPage.MainChatTextBox.Document.Blocks.Add(App.RemoveUser(UserToDisconnect));
-                WindowController.MainPage.FriendsListTextBox.Document = App.SortFriendsList();
-            });
-        }
-        private static void AssignNewLoginScreen(byte[] Data)
+        internal static void AssignNewLoginScreen(byte[] Data)
         {
             if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "CustomLoginScreen.gif"))
             {
@@ -239,7 +48,7 @@ namespace AntVault3_Client.ClientWorkers
             });
         }
 
-        private static async void AssignNewTheme(byte[] Data)
+        internal static async void AssignNewTheme(byte[] Data)
         {
             App.Current.Dispatcher.Invoke(() =>
             {
@@ -263,13 +72,13 @@ namespace AntVault3_Client.ClientWorkers
             });
         }
 
-        private static void PlayTransistion()
+        internal static void PlayTransistion()
         {
             SoundPlayer TransitionPlayer = new SoundPlayer(Properties.Resources.CasetteSwap);
             TransitionPlayer.Play();
         }
 
-        private static void AssignNewOnlineUserProfilePicture(byte[] Data, string NewUser)
+        internal static void AssignNewOnlineUserProfilePicture(byte[] Data, string NewUser)
         {
             if (NewUser != CurrentUser)
             {
@@ -282,7 +91,7 @@ namespace AntVault3_Client.ClientWorkers
             }
         }
 
-        private static void AssignNewOnlineUser(string MessageString)
+        internal static void AssignNewOnlineUser(string MessageString)
         {
             if (NewUser != CurrentUser)
             {
@@ -304,7 +113,7 @@ namespace AntVault3_Client.ClientWorkers
 
         }
 
-        private static void HandleMessage(string MessageString)
+        internal static void HandleMessage(string MessageString)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -325,12 +134,12 @@ namespace AntVault3_Client.ClientWorkers
             ClientNetworking.AntVaultClient.Send("/Message -Content " + MessageString + ";");
         }
 
-        private static void AssignOnlinePictures(byte[] Data)
+        internal static void AssignOnlinePictures(byte[] Data)
         {
             CurrentProfilePictures = AuxiliaryClientWorker.GetBitmapCollectionFromBytes(Data);
         }
 
-        private static void AssignOnlineUsers(byte[] Data)
+        internal static void AssignOnlineUsers(byte[] Data)
         {
             CurrentOnlineUsers = AuxiliaryClientWorker.GetStringCollectionFromBytes(Data);
             foreach (string User in CurrentOnlineUsers)
@@ -339,13 +148,13 @@ namespace AntVault3_Client.ClientWorkers
             }
         }
 
-        private static void AssingFriendsList(byte[] Data)
+        internal static void AssingFriendsList(byte[] Data)
         {
             Console.WriteLine("Assigning friends list for " + CurrentUser + ", registering " + CurrentFriendsList.Count + " entries");
             CurrentFriendsList = AuxiliaryClientWorker.GetStringCollectionFromBytes(Data);
         }
 
-        private static void AssignProfilePicture(byte[] Data)
+        internal static void AssignProfilePicture(byte[] Data)
         {
             Console.WriteLine("Assigned profile picture for " + CurrentUser);//From this point on, consult the Github repository
             CurrentProfilePicture = AuxiliaryClientWorker.GetBitmapFromBytes(Data);
@@ -355,7 +164,7 @@ namespace AntVault3_Client.ClientWorkers
             });
         }
 
-        private static void AssignUserInfo(string MessageString)
+        internal static void AssignUserInfo(string MessageString)
         {
             CurrentUser = AuxiliaryClientWorker.GetElement(MessageString, "-U ", " -S");
             CurrentStatus = AuxiliaryClientWorker.GetElement(MessageString, "-S ", ";");
@@ -392,9 +201,9 @@ namespace AntVault3_Client.ClientWorkers
             }));
         }
 
-        internal static void Events_ExceptionEncountered(object sender, WatsonTcp.ExceptionEventArgs e)
+        internal void Events_ExceptionEncountered(object sender, WatsonTcp.ExceptionEventArgs e)
         {
-            ClientNetworking.WriteToLog(e.Json);
+            Client.WriteToLog(e.Json);
         }
     }
 }
