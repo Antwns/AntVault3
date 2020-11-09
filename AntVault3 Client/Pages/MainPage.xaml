@@ -64,7 +64,7 @@
                     <Grid.Background>
                         <SolidColorBrush Color="#FFE5E5E5" Opacity="0.5"/>
                     </Grid.Background>
-                    <RichTextBox x:Name="MainChatTextBox" Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderBrush="White" SelectionBrush="#FF3F749E" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" BorderThickness="3" IsDocumentEnabled="True"/>
+                    <RichTextBox x:Name="MainChatTextBox" Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderBrush="White" SelectionBrush="#FF3F749E" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" BorderThickness="3" IsDocumentEnabled="True" IsReadOnly="True" IsReadOnlyCaretVisible="True" TextChanged="MainChatTextBox_TextChanged"/>
                     <TextBox x:Name="GeneralChatInputTextBox" Grid.Column="1" Margin="0" Grid.Row="3" TextWrapping="Wrap" Text="" Background="{x:Null}" BorderBrush="White" SelectionBrush="#FF497599" BorderThickness="3" VerticalContentAlignment="Center" FontSize="20" KeyDown="GeneralChatInputTextBox_KeyDown"/>
                 </Grid>
             </TabItem>

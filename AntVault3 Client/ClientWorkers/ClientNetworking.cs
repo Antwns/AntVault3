@@ -8,13 +8,13 @@ namespace AntVault3_Client.ClientWorkers
 {
     class ClientNetworking
     {
-        internal WatsonTcpClient AntVaultClient = null;
+        internal WatsonTcpClient AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
+
 
         bool HasSetupEvents = false;
 
         internal void Connect()
         {
-            AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
             if (HasSetupEvents == false)
             {
                 AntVaultClient.Settings.Logger = WriteToLog;
@@ -60,10 +60,8 @@ namespace AntVault3_Client.ClientWorkers
             }
         }
 
-        internal void Events_ExceptionEncountered(object sender, WatsonTcp.ExceptionEventArgs e)
+        internal void Events_ExceptionEncountered(object sender, ExceptionEventArgs e)
         {
-            WriteToLog("Json:");
-            WriteToLog(e.Json);
             WriteToLog("Exception:");
             WriteToLog(e.Exception.ToString());
         }

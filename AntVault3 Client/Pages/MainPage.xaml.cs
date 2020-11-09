@@ -30,5 +30,10 @@ namespace AntVault3_Client.Pages
                 GeneralChatInputTextBox.Text = "";
             }
         }
+
+        private void MainChatTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            MainChatTextBox.ScrollToEnd();
+        }
     }
 }

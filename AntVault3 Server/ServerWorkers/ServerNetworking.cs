@@ -5,7 +5,7 @@ namespace AntVault3_Server.ServerWorkers
 {
     class ServerNetworking
     {
-        internal WatsonTcpServer AntVaultServer = null;
+        internal WatsonTcpServer AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
 
         bool SetUpEvents = false;
 
@@ -13,7 +13,6 @@ namespace AntVault3_Server.ServerWorkers
 
         internal void StartServer()
         {
-            AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
             if (SetUpEvents == false)
             {
                 AntVaultServer.Keepalive.EnableTcpKeepAlives = true;

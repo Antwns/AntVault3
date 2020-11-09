@@ -6,10 +6,8 @@ namespace AntVault3_Server
 {
     class Program
     {
-        internal static MainServerWorker Networking = null;
         static void Main(string[] args)
         {
-
             AuxiliaryServerWorker.WriteInfo("Welcome to the AntVault 3 server.");
             AuxiliaryServerWorker.WriteInfo("Write /Start to get started!");
             string Command = Console.ReadLine();
@@ -17,7 +15,6 @@ namespace AntVault3_Server
             {
                 if(Command.ToLower() == "/start")
                 {
-                    Networking = new MainServerWorker();
                     MainServerWorker.Start();
                     Command = Console.ReadLine();
                 }
