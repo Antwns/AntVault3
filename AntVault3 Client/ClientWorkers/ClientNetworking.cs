@@ -3,6 +3,7 @@ using WatsonTcp;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
+using System.Windows.Controls;
 
 namespace AntVault3_Client.ClientWorkers
 {
@@ -42,14 +43,7 @@ namespace AntVault3_Client.ClientWorkers
             {
                 if (AntVaultClient.Connected == true)
                 {
-                    try
-                    {
-                        Task.Run(() => AntVaultClient.Send("/ServerStatus?"));
-                    }
-                    catch(Exception exc)
-                    {
-                        Console.WriteLine("Could not send message to the server due to " + exc);
-                    }
+                    Task.Run(() => TrySend());
                 }
                 else
                 {
@@ -67,6 +61,18 @@ namespace AntVault3_Client.ClientWorkers
             }
         }
 
+        internal void TrySend()
+        {
+            try
+            {
+                AntVaultClient.Send("/ServerStatus?");
+
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine("Could not send message to the server due to " + exc);
+            }
+        }
         internal void Events_ExceptionEncountered(object sender, ExceptionEventArgs e)
         {
             WriteToLog("Exception:");
