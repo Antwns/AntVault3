@@ -8,6 +8,7 @@ using System.Text;
 
 namespace AntVault3_Server.ServerWorkers
 {
+    //Merge with main server worker?
     class AuxiliaryServerWorker
     {
         internal static string ConfigDir = AppDomain.CurrentDomain.BaseDirectory + "AntVaultServer.config";

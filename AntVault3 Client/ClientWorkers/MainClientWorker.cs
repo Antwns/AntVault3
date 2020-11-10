@@ -43,18 +43,18 @@ namespace AntVault3_Client.ClientWorkers
         };
         internal static void Disconnect()
         {
-            Client.Disconnect();
+            Task.Run(() => Client.Disconnect());
         }
 
         internal static void Connect()
         {
-            Client.Connect();
+            Task.Run(() => Client.Connect());
             Client.AntVaultClient.Events.MessageReceived += MesssageReceived;
         }
 
         internal static void Send(string Text)
         {
-            Client.AntVaultClient.Send(Text);
+            Task.Run(() => Client.AntVaultClient.Send(Text));
         }
 
         internal static void MesssageReceived(object Sebder, MessageReceivedFromServerEventArgs e)

@@ -11,6 +11,7 @@ namespace AntVault3_Client.ClientWorkers
 {
     public class AuxiliaryClientWorker
     {
+        //Merge with main client worker?
         internal static string ConfigDir = AppDomain.CurrentDomain.BaseDirectory + "AntVaultClient.config";
 
         internal static string ReadFromConfig(string Property)
