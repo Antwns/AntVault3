@@ -43,7 +43,7 @@ namespace AntVault3_Client.ClientWorkers
             {
                 if (AntVaultClient.Connected == true)
                 {
-                    Task.Run(() => TrySend());
+                    Task.Run(() => AntVaultClient.Send("/ServerStatus?"););
                 }
                 else
                 {
@@ -58,19 +58,6 @@ namespace AntVault3_Client.ClientWorkers
             catch
             {
                 Console.WriteLine("Client could not be used");
-            }
-        }
-
-        internal void TrySend()
-        {
-            try
-            {
-                AntVaultClient.Send("/ServerStatus?");
-
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine("Could not send message to the server due to " + exc);
             }
         }
         internal void Events_ExceptionEncountered(object sender, ExceptionEventArgs e)
