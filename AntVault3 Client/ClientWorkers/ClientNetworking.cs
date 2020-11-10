@@ -42,7 +42,14 @@ namespace AntVault3_Client.ClientWorkers
             {
                 if (AntVaultClient.Connected == true)
                 {
-                    Task.Run(() => AntVaultClient.Send("/ServerStatus?"));
+                    try
+                    {
+                        Task.Run(() => AntVaultClient.Send("/ServerStatus?"));
+                    }
+                    catch(Exception exc)
+                    {
+                        Console.WriteLine("Could not send message to the server due to " + exc);
+                    }
                 }
                 else
                 {
