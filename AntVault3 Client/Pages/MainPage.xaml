@@ -100,17 +100,32 @@
                         <SolidColorBrush Color="White" Opacity="0.5"/>
                     </Grid.Background>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="10*"/>
                         <RowDefinition Height="50*"/>
-                        <RowDefinition Height="200*"/>
-                        <RowDefinition Height="200*"/>
+                        <RowDefinition Height="10*"/>
                         <RowDefinition Height="50*"/>
+                        <RowDefinition Height="10*"/>
+                        <RowDefinition Height="50*"/>
+                        <RowDefinition Height="10*"/>
+                        <RowDefinition Height="50*"/>
+                        <RowDefinition Height="10*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
                         <ColumnDefinition Width="50*"/>
-                        <ColumnDefinition Width="150*"/>
-                        <ColumnDefinition Width="150*"/>
                         <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="10*"/>
                     </Grid.ColumnDefinitions>
+                    <Button x:Name="ChangeProfilePictureButton" Content="Change profile picture" Grid.Column="1" Grid.Row="1" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="0,25" Grid.ColumnSpan="2" Click="ChangeProfilePictureButton_Click"/>
+                    <Button x:Name="ChangeThemeButton" Content="Change theme" Grid.Column="4" Grid.Row="1" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="0,25" Grid.ColumnSpan="2"/>
+                    <Button x:Name="ChangeNotificationSoundButton" Content="Change notification sound" Grid.Column="1" Grid.Row="3" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="0,25" Grid.ColumnSpan="2"/>
+                    <Button x:Name="MuteNotificationsButton" Content="Mute notifications" Grid.Column="4" Grid.Row="3" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="0,25" Grid.ColumnSpan="2"/>
+                    <Button x:Name="ViewConnectionSettingsButton" Content="View connection settings" Grid.Column="1" Grid.Row="5" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="-1,25,0,25" Grid.ColumnSpan="2"/>
+                    <Button x:Name="AboutButton" Content="About AntVault3" Grid.Row="5" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="133,25,0,25" Grid.ColumnSpan="3" Grid.Column="3"/>
+                    <Button x:Name="CreditsButton" Content="Credits" Grid.Row="7" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="0,25" Grid.Column="3"/>
                 </Grid>
             </TabItem>
         </TabControl>

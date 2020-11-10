@@ -6,7 +6,6 @@ namespace AntVault3_Server.ServerWorkers
     class ServerNetworking
     {
         internal WatsonTcpServer AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
-
         bool SetUpEvents = false;
 
         internal string ServerStatus = null;

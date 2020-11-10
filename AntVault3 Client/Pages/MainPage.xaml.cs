@@ -16,11 +16,6 @@ namespace AntVault3_Client.Pages
             InitializeComponent();
         }
 
-        private void MediaElement_Loaded(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         private void GeneralChatInputTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Enter)
@@ -34,6 +29,11 @@ namespace AntVault3_Client.Pages
         private void MainChatTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             MainChatTextBox.ScrollToEnd();
+        }
+
+        private void ChangeProfilePictureButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainClientWorker.UpdateProfilePicture();
         }
     }
 }

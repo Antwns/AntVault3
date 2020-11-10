@@ -1,11 +1,11 @@
 ﻿using AntVault3_Client.Pages;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Media;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -416,9 +416,23 @@ namespace AntVault3_Client.ClientWorkers
             }));
         }
 
-        internal void Events_ExceptionEncountered(object sender, WatsonTcp.ExceptionEventArgs e)
+        internal static void UpdateProfilePicture()
         {
-            Client.WriteToLog(e.Json);
+            OpenFileDialog NewProfilePictureDialog = new OpenFileDialog()
+            {
+                CheckFileExists = true,
+                Filter = "png files (*.png)|*.png",
+            };
+            NewProfilePictureDialog.ShowDialog(App.Current.MainWindow);
+            if (NewProfilePictureDialog.FileName != null || NewProfilePictureDialog.FileName != "" && AuxiliaryClientWorker.CheckIfImageIsPng(NewProfilePictureDialog.FileName) == true)
+            {
+                Client.AntVaultClient.Send("/NewProfilePicture");
+                Client.AntVaultClient.Send(File.ReadAllBytes(NewProfilePictureDialog.FileName));
+            }
+            else
+            {
+                MessageBox.Show("You either did not select a file or the file selected was not of valid .png format.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

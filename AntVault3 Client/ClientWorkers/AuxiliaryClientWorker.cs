@@ -116,5 +116,17 @@ namespace AntVault3_Client.ClientWorkers
             return BytesToReturn;
         }
 
+        internal static bool CheckIfImageIsPng(string FileDir)
+        {
+            byte[] BytesToCheck = File.ReadAllBytes(FileDir);
+            if(Encoding.ASCII.GetString(BytesToCheck).Contains("�PNG"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

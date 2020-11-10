@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WatsonTcp;
-using AntVault3_Server.ServerWorkers;
 
 namespace AntVault3_Server.ServerWorkers
 {
