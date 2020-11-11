@@ -20,6 +20,7 @@ namespace AntVault3_Client.ClientWorkers
         static string CurrentStatus;
         internal static string NewUser = "NewUser";
         internal static string CurrentUser;
+        internal static string UserToUpdateProfilePicture;
 
         static Bitmap CurrentProfilePicture;
 
@@ -36,11 +37,10 @@ namespace AntVault3_Client.ClientWorkers
         static bool NewThemeMode;
         static bool HasSetNewUser;
         static bool NewLoginScreenMode;
+        static bool NewProfilePictureMode;
+        static bool HasSetNewProfilePicture;
 
-        internal static ClientNetworking Client = new ClientNetworking()
-        {
-
-        };
+        internal static ClientNetworking Client = new ClientNetworking();
         internal static void Disconnect()
         {
             Task.Run(() => Client.Disconnect());
@@ -199,6 +199,31 @@ namespace AntVault3_Client.ClientWorkers
                     Console.WriteLine("Assigned list for online users");
                 }
             }
+            if (MessageString.StartsWith("/NewProfilePicture") == true || NewProfilePictureMode == true)
+            {
+                try
+                {
+                    if (HasSetNewProfilePicture == false)
+                    {
+                        UserToUpdateProfilePicture = AuxiliaryClientWorker.GetElement(MessageString, "-U ", ";");
+                        Console.WriteLine("User that sent the profile picture update pulse is " + UserToUpdateProfilePicture);
+                        HasSetNewProfilePicture = true;
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Could not grab new profile picture's pulse origin successfully");
+                }
+                if (MessageString.StartsWith("/NewProfilePicture") == true && NewProfilePictureMode == false)
+                {
+                    NewProfilePictureMode = true;
+                }
+                else
+                {
+                    NewProfilePictureMode = false;
+                    Task.Run(() => UpdateProfilePicture(UserToUpdateProfilePicture ,e.Data));
+                }
+            }
             if (MessageString.StartsWith("/NewUser") == true || NewOnlineUserMode == true)
             {
                 try
@@ -234,6 +259,12 @@ namespace AntVault3_Client.ClientWorkers
             {
                 Task.Run(() => HandleMessage(MessageString));
             }
+        }
+
+        private static void UpdateProfilePicture(string UserToUpdate, byte[] Data)
+        {
+            CurrentProfilePictures[CurrentOnlineUsers.IndexOf(UserToUpdate)] = AuxiliaryClientWorker.GetBitmapFromBytes(Data);
+            Task.Run(() => AssignProfilePicture(Data));
         }
 
         internal static void AssignNewLoginScreen(byte[] Data)
@@ -416,7 +447,7 @@ namespace AntVault3_Client.ClientWorkers
             }));
         }
 
-        internal static void UpdateProfilePicture()
+        internal static void GetNewProfilePicture()
         {
             OpenFileDialog NewProfilePictureDialog = new OpenFileDialog()
             {

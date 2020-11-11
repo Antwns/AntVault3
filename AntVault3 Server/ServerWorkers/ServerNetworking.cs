@@ -5,7 +5,13 @@ namespace AntVault3_Server.ServerWorkers
 {
     class ServerNetworking
     {
-        internal WatsonTcpServer AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
+        internal WatsonTcpServer AntVaultServer = null;
+        
+        internal ServerNetworking()
+        {
+            AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
+        }
+        
         bool SetUpEvents = false;
 
         internal string ServerStatus = null;
@@ -14,11 +20,11 @@ namespace AntVault3_Server.ServerWorkers
         {
             if (SetUpEvents == false)
             {
+                AntVaultServer.Events.ExceptionEncountered += Events_ExceptionEncountered;
                 AntVaultServer.Keepalive.EnableTcpKeepAlives = true;
                 AntVaultServer.Keepalive.TcpKeepAliveInterval = 5;
                 AntVaultServer.Keepalive.TcpKeepAliveTime = 5;
                 AntVaultServer.Settings.AcceptInvalidCertificates = true;
-                AntVaultServer.Events.ExceptionEncountered += Events_ExceptionEncountered;
                 SetUpEvents = true;
                 AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
             }

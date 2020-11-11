@@ -33,7 +33,7 @@ namespace AntVault3_Client.Pages
 
         private void ChangeProfilePictureButton_Click(object sender, RoutedEventArgs e)
         {
-            MainClientWorker.UpdateProfilePicture();
+            MainClientWorker.GetNewProfilePicture();
         }
     }
 }

@@ -3,13 +3,17 @@ using WatsonTcp;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
-using System.Windows.Controls;
 
 namespace AntVault3_Client.ClientWorkers
 {
     class ClientNetworking
     {
-        internal WatsonTcpClient AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
+        internal WatsonTcpClient AntVaultClient = null;
+
+        internal ClientNetworking()
+        {
+            AntVaultClient = new WatsonTcpClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
+        }
 
 
         bool HasSetupEvents = false;
@@ -18,13 +22,12 @@ namespace AntVault3_Client.ClientWorkers
         {
             if (HasSetupEvents == false)
             {
-                AntVaultClient.Settings.Logger = WriteToLog;
-                AntVaultClient.Events.ExceptionEncountered += Events_ExceptionEncountered;
                 AntVaultClient.Keepalive.EnableTcpKeepAlives = true;
                 AntVaultClient.Keepalive.TcpKeepAliveInterval = 1;
                 AntVaultClient.Keepalive.TcpKeepAliveTime = 1;
                 AntVaultClient.Settings.Logger = WriteToLog;
                 AntVaultClient.Events.ExceptionEncountered += Events_ExceptionEncountered;
+                AntVaultClient.Settings.Logger = WriteToLog;
                 HasSetupEvents = true;
                 Console.WriteLine("Events setup complete");
             }
@@ -43,7 +46,7 @@ namespace AntVault3_Client.ClientWorkers
             {
                 if (AntVaultClient.Connected == true)
                 {
-                    Task.Run(() => AntVaultClient.Send("/ServerStatus?"););
+                    Task.Run(() => AntVaultClient.Send("/ServerStatus?"));
                 }
                 else
                 {

@@ -28,6 +28,8 @@ namespace AntVault3_Server.ServerWorkers
         static Collection<Bitmap> OnlineProfilePictures = new Collection<Bitmap>();
         static Collection<string> OnlineUsers = new Collection<string>();
 
+        static bool NewProfilePictureMode;
+
         internal static void Start()
         {
             Server.StartServer();
@@ -149,8 +151,15 @@ namespace AntVault3_Server.ServerWorkers
         internal static void MessageReceived(object sender, MessageReceivedFromClientEventArgs e)
         {
             string MessageString = AuxiliaryServerWorker.GetStringFromBytes(e.Data);
-            AuxiliaryServerWorker.WriteDebug(MessageString);
-            if(MessageString.StartsWith("/ServerStatus?"))
+            if(MessageString.Contains("�PNG") == false)
+            {
+                AuxiliaryServerWorker.WriteDebug(MessageString);
+            }
+            else
+            {
+                AuxiliaryServerWorker.WriteDebug("[PNG]");
+            }
+            if (MessageString.StartsWith("/ServerStatus?"))
             {
                 Task.Run(() => UpdateStatus(Server.ServerStatus));
             }
@@ -174,6 +183,46 @@ namespace AntVault3_Server.ServerWorkers
             {
                 Task.Run(() => UpdateLoginScreen(e.IpPort));
             }
+            if (MessageString.StartsWith("/NewProfilePicture") == true || NewProfilePictureMode == true)
+            {
+                if (MessageString.StartsWith("/NewProfilePicture") == true && NewProfilePictureMode == false)
+                {
+                    NewProfilePictureMode = true;
+                }
+                else
+                {
+                    NewProfilePictureMode = false;
+                    Task.Run(() => UpdateProfilePicture(e.IpPort, e.Data));
+                }
+            }
+        }
+
+        private static async Task SendNewProfilePicturePulseAsync(string UserToUpdate, byte[] Data)
+        {
+            foreach (Session Sess in Sessions)
+            {
+                Server.AntVaultServer.Send(Sess.IpPort, "/NewProfilePicture -U " + UserToUpdate + ";");
+                await Task.Delay(10);
+                Server.AntVaultServer.Send(Sess.IpPort, Data);
+                AuxiliaryServerWorker.WriteOK("Sent profile picture update pulse to " + UserToUpdate);
+            }
+            AuxiliaryServerWorker.WriteOK("Finished sending profile picture update pulses to " + Sessions.Count + " active clients");
+        }
+
+        private static void UpdateProfilePicture(string IpPort, byte[] Data)
+        {
+            string UserToUpdate = Sessions.First(S => S.IpPort.Equals(IpPort)).Username;
+            string FileToUpdate = UserDirectories + "\\" + UserToUpdate + "\\" + "ProfilePicture_" + UserToUpdate + ".png";
+            AuxiliaryServerWorker.WriteInfo("Received profile picture update pulse from " + UserToUpdate);
+            Bitmap ProfilePictureToUpdate = AuxiliaryServerWorker.GetBitmapFromBytes(Data);
+            ProfilePictures[Usernames.IndexOf(UserToUpdate)] = ProfilePictureToUpdate;
+            if(File.Exists(FileToUpdate))
+            {
+                File.Delete(FileToUpdate);
+            }
+            ProfilePictureToUpdate.Save(FileToUpdate, ImageFormat.Png);
+            AuxiliaryServerWorker.WriteOK("Updated local profile picture for " + UserToUpdate);
+            Task.Run(() => SendNewProfilePicturePulseAsync(UserToUpdate, Data));
         }
 
         private static void UpdateLoginScreen(string IpPort)
