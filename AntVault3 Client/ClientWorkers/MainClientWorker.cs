@@ -108,11 +108,19 @@ namespace AntVault3_Client.ClientWorkers
             string UserToDisconnect = AuxiliaryClientWorker.GetElement(MessageString, "-U ", ";");
             CurrentProfilePictures.Remove(MainClientWorker.CurrentProfilePictures[MainClientWorker.CurrentOnlineUsers.IndexOf(UserToDisconnect)]);
             CurrentOnlineUsers.Remove(UserToDisconnect);
-            Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                WindowController.MainPage.MainChatTextBox.Document.Blocks.Add(App.RemoveUser(UserToDisconnect));
-                WindowController.MainPage.FriendsListTextBox.Document = App.SortFriendsList();
-            });
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowController.MainPage.MainChatTextBox.Document.Blocks.Add(App.RemoveUser(UserToDisconnect));
+                    WindowController.MainPage.FriendsListTextBox.Document = App.SortFriendsList();
+                });
+            }
+            catch(Exception exc)
+            {
+                Console.WriteLine("Failed to update UI due to " + exc);
+            }
+
         }
 
         internal static void AssignNewOnlineUser(string MessageString)

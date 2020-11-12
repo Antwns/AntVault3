@@ -38,7 +38,7 @@ namespace AntVault3_Client.Pages
 
         private void MyPageFrame_Loaded(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => ClientNetworking.AntVaultClient.SendMessage("/GetMyPage"));
+            //Task.Run(() => ClientNetworking.AntVaultClient.SendMessage("/GetMyPage"));
         }
     }
 }
