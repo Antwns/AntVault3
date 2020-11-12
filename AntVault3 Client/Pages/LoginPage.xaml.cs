@@ -38,7 +38,7 @@ namespace AntVault3_Client.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoginMenuPlayer(true, null);
-            Task.Run(() => ClientNetworking.Connect());
+            Task.Run(() => ClientNetworking.ConnectAsync());
         }
 
         private void UsernameTextBox_MouseEnter(object sender, MouseEventArgs e)

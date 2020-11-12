@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 using SimpleSockets;
 using SimpleSockets.Messaging.Metadata;
 using SimpleSockets.Server;
@@ -22,6 +24,7 @@ namespace AntVault3_Server.ServerWorkers
             {
                 AntVaultServer.MessageReceived += MessageReceived;
                 AntVaultServer.BytesReceived += BytesReceived;
+                AntVaultServer.ClientDisconnected += AntVaultServer_ClientDisconnected;
                 SetUpEvents = true;
                 AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
             }
@@ -42,6 +45,14 @@ namespace AntVault3_Server.ServerWorkers
             catch (Exception exc)
             {
                 AuxiliaryServerWorker.WriteError("Server could not be started due to " + exc);
+            }
+        }
+
+        private static void AntVaultServer_ClientDisconnected(IClientInfo Client, DisconnectReason Reason)
+        {
+            if (MainServerWorker.Sessions.Any(Session => Session.IpPort.Equals(Client.LocalIPv4)))
+            {
+                AuxiliaryServerWorker.WriteInfo("Client " + MainServerWorker.Sessions.First(Session => Session.IpPort.Equals(Client.RemoteIPv4)) + " with IP " + Client.RemoteIPv4 + " and ID " + Client.Id + " disconnected due to " + Reason.ToString());
             }
         }
 
@@ -71,7 +82,7 @@ namespace AntVault3_Server.ServerWorkers
             }
             if (MessageString.StartsWith("/ServerTheme?"))
             {
-                Task.Run(() => MainServerWorker.UpdateTheme(Client));
+                Task.Run(() => MainServerWorker.UpdateThemeAsync(Client));
             }
             if (MessageString.StartsWith("/Login"))
             {

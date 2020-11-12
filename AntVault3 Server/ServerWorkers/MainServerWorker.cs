@@ -19,7 +19,7 @@ namespace AntVault3_Server.ServerWorkers
         internal static string ServerTheme = AppDomain.CurrentDomain.BaseDirectory + "ServerTheme.wav";
         internal static string ServerLoginScreen = AppDomain.CurrentDomain.BaseDirectory + "ServerLoginScreen.gif";
 
-        static Collection<Session> Sessions = new Collection<Session>();
+        internal static Collection<Session> Sessions = new Collection<Session>();
         static Collection<string> Usernames = new Collection<string>();
         static Collection<string> Passwords = new Collection<string>();
         static Collection<string> Statuses = new Collection<string>();
@@ -228,7 +228,7 @@ namespace AntVault3_Server.ServerWorkers
             }
         }
 
-        internal static void UpdateTheme(IClientInfo Client)
+        internal static async Task UpdateThemeAsync(IClientInfo Client)
         {
             AuxiliaryServerWorker.WriteInfo(Client.RemoteIPv4 + " requested the current server theme");
             byte[] ServerThemeBytes = File.ReadAllBytes(ServerTheme);
@@ -247,9 +247,10 @@ namespace AntVault3_Server.ServerWorkers
                 //Send msg that the client shuold enter UpdateThemeMode and then send the new theme over a stream
                 if (Sessions.Any(Sess => Sess.IpPort.Equals(Client.RemoteIPv4)) == false)
                 {
-                    Task.Run(()=> ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/NewTheme"));
+                    await Task.Run(() => ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/NewTheme"));
                     MemoryStream NewServerThemeStream = new MemoryStream(File.ReadAllBytes(ServerTheme));
-                    ServerNetworking.AntVaultServer.SendBytes(Client.Id, NewServerThemeStream.ToArray());
+                    await Task.Delay(10);
+                    await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, NewServerThemeStream.ToArray()));
                     AuxiliaryServerWorker.WriteOK("Custom theme sent to " + Client.RemoteIPv4);
                 }
             }
@@ -260,8 +261,9 @@ namespace AntVault3_Server.ServerWorkers
             string Reason = AuxiliaryServerWorker.GetElement(MessageString, "-Content ", ";");
             string UserToDisconnect = Sessions.First(Sess => Sess.IpPort.Equals(Client.RemoteIPv4)).Username;
             AuxiliaryServerWorker.WriteInfo(UserToDisconnect + " disconnected due to " + Reason );
-            OnlineProfilePictures.Remove(ProfilePictures[OnlineUsers.IndexOf(UserToDisconnect)]);
+            OnlineProfilePictures.Remove(OnlineProfilePictures[OnlineUsers.IndexOf(UserToDisconnect)]);
             OnlineUsers.Remove(UserToDisconnect);
+            Sessions.Remove(Sessions.First(S => S.Username.Equals(UserToDisconnect)));
             try
             {
                 //ServerNetworking.AntVaultServer.DisconnectClient(IpPort);
@@ -377,7 +379,7 @@ namespace AntVault3_Server.ServerWorkers
             foreach(IClientInfo Client in ServerNetworking.AntVaultServer.GetConnectedClients().Values)
             {
                 ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/ServerStatus " + ServerNetworking.ServerStatus + ";");
-                AuxiliaryServerWorker.WriteInfo("Sent status update pulse to " + Client);
+                AuxiliaryServerWorker.WriteInfo("Sent status update pulse to " + Client.RemoteIPv4);
             }
             AuxiliaryServerWorker.WriteInfo("Updating config file...");
             string NewConfig = "/IP " + AuxiliaryServerWorker.ReadFromConfig("IP") + "\\" + Environment.NewLine + "/Port " + AuxiliaryServerWorker.ReadFromConfig("Port") + "\\" + Environment.NewLine + "/Status " + ServerNetworking.ServerStatus + "\\";

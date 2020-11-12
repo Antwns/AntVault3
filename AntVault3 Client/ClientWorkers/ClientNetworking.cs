@@ -25,7 +25,7 @@ namespace AntVault3_Client.ClientWorkers
 
         static bool HasSetupEvents = false;
 
-        internal static void Connect()
+        internal static async Task ConnectAsync()
         {
              AntVaultClient = new SimpleSocketTcpClient();
             if (HasSetupEvents == false)
@@ -38,22 +38,30 @@ namespace AntVault3_Client.ClientWorkers
             try
             {
                 AntVaultClient.StartClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
-                Task.Run(() => AntVaultClient.SendMessage("/ServerStatus?"));
+                await Task.Run(() => AntVaultClient.SendMessage("/ServerStatus?"));
+                await Task.Run(() => App.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowController.LoginPage.ConnectButton.Content = "Loading...";
+                })
+                );
             }
             catch (Exception exc)
             {
-                Console.WriteLine("Could not connect to the server due to " + exc);
-                App.Current.Dispatcher.Invoke(() =>
+                await Task.Run(() => Console.WriteLine("Could not connect to the server due to " + exc));
+                await Task.Run(() => App.Current.Dispatcher.Invoke(() =>
                 {
-                    WindowController.LoginPage.StatusLabel.Content = "ERROR-Server offline, try to Vault later.";
-                });
-                Thread.Sleep(1000);
-                Connect();
+                    WindowController.LoginPage.ConnectButton.Content = "ERROR-Server offline, try to Vault later.";
+                })
+                );
+                await Task.Delay(1000);
+                await ConnectAsync();
             }
         }
 
-        internal static void BytesReceived(SimpleSocketClient Client, byte[] MessageByte)
+        internal static async void BytesReceived(SimpleSocketClient Client, byte[] MessageByte)
         {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
             string MessageString = AuxiliaryClientWorker.GetStringFromBytes(MessageByte);//Translates stuff for debugging purposes
             #region debugging
             if (MessageString.StartsWith("�PNG") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.Contains("WAVEfmt") == false && MessageString.Contains("GIF89a") == false)
@@ -84,16 +92,22 @@ namespace AntVault3_Client.ClientWorkers
             if (NewThemeMode == true)
             {
                 NewThemeMode = false;
-                Task.Run(() => MainClientWorker.AssignNewTheme(MessageByte));
-                Application.Current.Dispatcher.Invoke(() =>
+                await Task.Run(() => MainClientWorker.AssignNewTheme(MessageByte));
+                await Task.Run(() => Application.Current.Dispatcher.Invoke(() =>
                 {
                     Client.SendMessage("/ServerLoginScreen?");
-                });
+                })
+                );
             }
             if (NewLoginScreenMode == true)
             {
                 NewLoginScreenMode = false;
                 Task.Run(() => MainClientWorker.AssignNewLoginScreen(MessageByte));
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowController.LoginPage.ConnectButton.Content = "Connect";
+                    WindowController.LoginPage.ConnectButton.IsEnabled = true;
+                });
             }
             if (UserProfilePictureMode == true)
             {
@@ -129,7 +143,7 @@ namespace AntVault3_Client.ClientWorkers
             if (NewOnlineUserMode == true)
             {
                 NewOnlineUserMode = false;
-                Task.Run(() => MainClientWorker.AssignNewOnlineUserProfilePicture(MessageByte, NewUser));
+                await Task.Run(() => MainClientWorker.AssignNewOnlineUserProfilePicture(MessageByte, NewUser));
             }
             if (CurrentPageUpdateMode == true)
             {
@@ -137,6 +151,7 @@ namespace AntVault3_Client.ClientWorkers
                 //Task.Run(() => MainClientWorker.AssignCurrentUserPage(MessageByte));//Disabled due to breaking the app. Will work on this in the future
                 Console.WriteLine("Updated " + MainClientWorker.CurrentUser + "'s profile page");
             }
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         internal static void MessageReceived(SimpleSocketClient Client, string MessageString)
