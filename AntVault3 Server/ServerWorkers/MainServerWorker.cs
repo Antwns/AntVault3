@@ -1,4 +1,5 @@
 ﻿using AntVault3_Server.Resources;
+using SimpleSockets.Messaging.Metadata;
 using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -7,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using WatsonTcp;
 
 namespace AntVault3_Server.ServerWorkers
 {
@@ -19,8 +19,6 @@ namespace AntVault3_Server.ServerWorkers
         internal static string ServerTheme = AppDomain.CurrentDomain.BaseDirectory + "ServerTheme.wav";
         internal static string ServerLoginScreen = AppDomain.CurrentDomain.BaseDirectory + "ServerLoginScreen.gif";
 
-        internal static ServerNetworking Server = new ServerNetworking();
-
         static Collection<Session> Sessions = new Collection<Session>();
         static Collection<string> Usernames = new Collection<string>();
         static Collection<string> Passwords = new Collection<string>();
@@ -29,18 +27,14 @@ namespace AntVault3_Server.ServerWorkers
         static Collection<Bitmap> OnlineProfilePictures = new Collection<Bitmap>();
         static Collection<string> OnlineUsers = new Collection<string>();
 
-        static bool NewProfilePictureMode;
-        static bool GetUserPageMode;
-
         internal static void Start()
         {
-            Server.StartServer();
-            Server.AntVaultServer.Events.MessageReceived += MessageReceived;
+            ServerNetworking.StartServer();
         }
 
         internal static void Stop()
         {
-            Server.StopServer();
+            ServerNetworking.StopServer();
         }
 
         internal static void CheckUserPages()
@@ -175,76 +169,15 @@ namespace AntVault3_Server.ServerWorkers
             }
         }
 
-        internal static void MessageReceived(object sender, MessageReceivedFromClientEventArgs e)
+        internal static async Task SendUserPageAsync(IClientInfo Client)
         {
-            string MessageString = AuxiliaryServerWorker.GetStringFromBytes(e.Data);
-            if(MessageString.Contains("�PNG") == false)
-            {
-                AuxiliaryServerWorker.WriteDebug(MessageString);
-            }
-            else
-            {
-                AuxiliaryServerWorker.WriteDebug("[PNG]");
-            }
-            if (MessageString.StartsWith("/ServerStatus?"))
-            {
-                Task.Run(() => UpdateStatus(Server.ServerStatus));
-            }
-            if(MessageString.StartsWith("/ServerTheme?"))
-            {
-                Task.Run(() => UpdateTheme(e.IpPort));
-            }
-            if(MessageString.StartsWith("/Login"))
-            {
-                Task.Run(() => DoAuthenticationAsync(MessageString, e.IpPort));
-            }
-            if(MessageString.StartsWith("/Message"))
-            {
-                Task.Run(() => HandleMessage(MessageString, e.IpPort));
-            }
-            if(MessageString.StartsWith("/Disconnect"))
-            {
-                Task.Run(() => HandleDisconnect(MessageString, e.IpPort));
-            }
-            if(MessageString.StartsWith("/ServerLoginScreen?"))
-            {
-                Task.Run(() => UpdateLoginScreen(e.IpPort));
-            }
-            if (MessageString.StartsWith("/NewProfilePicture") == true || NewProfilePictureMode == true)
-            {
-                if (MessageString.StartsWith("/NewProfilePicture") == true && NewProfilePictureMode == false)
-                {
-                    NewProfilePictureMode = true;
-                }
-                else
-                {
-                    NewProfilePictureMode = false;
-                    Task.Run(() => UpdateProfilePicture(e.IpPort, e.Data));
-                }
-            }
-            if (MessageString.StartsWith("/GetMyPage") == true || GetUserPageMode == true)
-            {
-                if (MessageString.StartsWith("/GetMyPage") == true && GetUserPageMode == false)
-                {
-                    GetUserPageMode = true;
-                }
-                else
-                {
-                    GetUserPageMode = false;
-                    Task.Run(() => SendUserPageAsync(e.IpPort));
-                }
-            }
-        }
-
-        private static async Task SendUserPageAsync(string IpPort)
-        {
-            string Sender = Sessions.First(S => S.IpPort.Equals(IpPort)).Username;
+            string Sender = Sessions.First(Session => Session.IpPort.Equals(Client.RemoteIPv4)).Username;
             string SendersPage = UserDirectories + "\\" + Sender + "\\" + "Page_" + Sender + ".AVPage";
             if (File.Exists(SendersPage))
             {
-                await Server.AntVaultServer.SendAsync(IpPort, "/YourPage");
+                await ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/YourPage");
                 await Task.Delay(10);
-                await Server.AntVaultServer.SendAsync(IpPort, File.ReadAllBytes(SendersPage));
+                await ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, File.ReadAllBytes(SendersPage));
                 AuxiliaryServerWorker.WriteOK("Sent " + Sender + " their page");
             }
             else
@@ -253,21 +186,21 @@ namespace AntVault3_Server.ServerWorkers
             }
         }
 
-        private static async Task SendNewProfilePicturePulseAsync(string UserToUpdate, byte[] Data)
+        internal static async Task SendNewProfilePicturePulseAsync(string UserToUpdate, byte[] Data)
         {
             foreach (Session Sess in Sessions)
             {
-                Server.AntVaultServer.Send(Sess.IpPort, "/NewProfilePicture -U " + UserToUpdate + ";");
+                await ServerNetworking.AntVaultServer.SendMessageAsync(AuxiliaryServerWorker.GetClientIDFromIpPort(Sess.IpPort), "/NewProfilePicture -U " + UserToUpdate + ";");
                 await Task.Delay(10);
-                Server.AntVaultServer.Send(Sess.IpPort, Data);
+                await ServerNetworking.AntVaultServer.SendBytesAsync(AuxiliaryServerWorker.GetClientIDFromIpPort(Sess.IpPort), Data);
                 AuxiliaryServerWorker.WriteOK("Sent profile picture update pulse to " + UserToUpdate);
             }
             AuxiliaryServerWorker.WriteOK("Finished sending profile picture update pulses to " + Sessions.Count + " active clients");
         }
 
-        private static void UpdateProfilePicture(string IpPort, byte[] Data)
+        internal static void UpdateProfilePicture(IClientInfo Client, byte[] Data)
         {
-            string UserToUpdate = Sessions.First(S => S.IpPort.Equals(IpPort)).Username;
+            string UserToUpdate = Sessions.First(S => S.IpPort.Equals(Client.RemoteIPv4)).Username;
             string FileToUpdate = UserDirectories + "\\" + UserToUpdate + "\\" + "ProfilePicture_" + UserToUpdate + ".png";
             AuxiliaryServerWorker.WriteInfo("Received profile picture update pulse from " + UserToUpdate);
             Bitmap ProfilePictureToUpdate = AuxiliaryServerWorker.GetBitmapFromBytes(Data);
@@ -281,34 +214,34 @@ namespace AntVault3_Server.ServerWorkers
             Task.Run(() => SendNewProfilePicturePulseAsync(UserToUpdate, Data));
         }
 
-        private static void UpdateLoginScreen(string IpPort)
+        internal static void UpdateLoginScreen(IClientInfo Client)
         {
-            AuxiliaryServerWorker.WriteInfo(IpPort + " requested the current server login screen");
+            AuxiliaryServerWorker.WriteInfo(Client.RemoteIPv4 + " requested the current server login screen");
             byte[] ServerLoginScreenBytes = File.ReadAllBytes(ServerLoginScreen);
             MemoryStream DefaultServerLoginScreenStream = new MemoryStream();
             Properties.Resources.LoginMenuBg.Save(DefaultServerLoginScreenStream, ImageFormat.Gif);
             if(ServerLoginScreenBytes.Length == DefaultServerLoginScreenStream.ToArray().Length)
             {
                 AuxiliaryServerWorker.WriteInfo("Default server login screen detected");
-                Server.AntVaultServer.Send(IpPort, "/DefaultLoginScreen");
+                ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/DefaultLoginScreen");
                 AuxiliaryServerWorker.WriteOK("No login screen set");
             }
             else
             {
                 AuxiliaryServerWorker.WriteInfo("Custom login screen detected");
-                if(Sessions.Any(Sess => Sess.IpPort.Equals(IpPort)) == false)
+                if(Sessions.Any(Sess => Sess.IpPort.Equals(Client.RemoteIPv4)) == false)
                 {
-                    Task.Run(()=> Server.AntVaultServer.Send(IpPort, "/NewLoginScreen"));
+                    Task.Run(()=> ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/NewLoginScreen"));
                     MemoryStream NewServerLoginScreenStream = new MemoryStream(File.ReadAllBytes(ServerLoginScreen));
-                    Server.AntVaultServer.Send(IpPort, NewServerLoginScreenStream.ToArray());
-                    AuxiliaryServerWorker.WriteOK("Custom login screen sent to " + IpPort);
+                    ServerNetworking.AntVaultServer.SendBytes(Client.Id, NewServerLoginScreenStream.ToArray());
+                    AuxiliaryServerWorker.WriteOK("Custom login screen sent to " + Client.RemoteIPv4);
                 }
             }
         }
 
-        private static void UpdateTheme(string IpPortC)
+        internal static void UpdateTheme(IClientInfo Client)
         {
-            AuxiliaryServerWorker.WriteInfo(IpPortC + " requested the current server theme");
+            AuxiliaryServerWorker.WriteInfo(Client.RemoteIPv4 + " requested the current server theme");
             byte[] ServerThemeBytes = File.ReadAllBytes(ServerTheme);
             MemoryStream DefaultServerThemeStream = new MemoryStream(Convert.ToInt32(Properties.Resources.ServerTheme.Length));
             Properties.Resources.ServerTheme.CopyTo(DefaultServerThemeStream);
@@ -316,33 +249,33 @@ namespace AntVault3_Server.ServerWorkers
             {
                 AuxiliaryServerWorker.WriteInfo("Default theme detected");
                 //Send msg that the client should use the default theme
-                Server.AntVaultServer.Send(IpPortC, "/DefaultTheme");
+                ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/DefaultTheme");
                 AuxiliaryServerWorker.WriteOK("No theme sent");
             }
             else
             {
                 AuxiliaryServerWorker.WriteInfo("Custom theme detected");
                 //Send msg that the client shuold enter UpdateThemeMode and then send the new theme over a stream
-                if (Sessions.Any(Sess => Sess.IpPort.Equals(IpPortC)) == false)
+                if (Sessions.Any(Sess => Sess.IpPort.Equals(Client.RemoteIPv4)) == false)
                 {
-                    Task.Run(()=> Server.AntVaultServer.Send(IpPortC, "/NewTheme"));
+                    Task.Run(()=> ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/NewTheme"));
                     MemoryStream NewServerThemeStream = new MemoryStream(File.ReadAllBytes(ServerTheme));
-                    Server.AntVaultServer.Send(IpPortC, NewServerThemeStream.ToArray());
-                    AuxiliaryServerWorker.WriteOK("Custom theme sent to " + IpPortC);
+                    ServerNetworking.AntVaultServer.SendBytes(Client.Id, NewServerThemeStream.ToArray());
+                    AuxiliaryServerWorker.WriteOK("Custom theme sent to " + Client.RemoteIPv4);
                 }
             }
         }
 
-        private static void HandleDisconnect(string MessageString, string IpPort)
+        internal static void HandleDisconnect(string MessageString, IClientInfo Client)
         {
             string Reason = AuxiliaryServerWorker.GetElement(MessageString, "-Content ", ";");
-            string UserToDisconnect = Sessions.First(Sess => Sess.IpPort.Equals(IpPort)).Username;
+            string UserToDisconnect = Sessions.First(Sess => Sess.IpPort.Equals(Client.RemoteIPv4)).Username;
             AuxiliaryServerWorker.WriteInfo(UserToDisconnect + " disconnected due to " + Reason );
             OnlineProfilePictures.Remove(ProfilePictures[OnlineUsers.IndexOf(UserToDisconnect)]);
             OnlineUsers.Remove(UserToDisconnect);
             try
             {
-                Server.AntVaultServer.DisconnectClient(IpPort);
+                //ServerNetworking.AntVaultServer.DisconnectClient(IpPort);
             }
             catch
             {
@@ -352,48 +285,48 @@ namespace AntVault3_Server.ServerWorkers
             {
                 foreach (Session Sess in Sessions)
                 {
-                    Server.AntVaultServer.Send(Sess.IpPort, "/UserDisconnect -U " + UserToDisconnect + ";");
+                    ServerNetworking.AntVaultServer.SendMessage(AuxiliaryServerWorker.GetClientIDFromIpPort(Sess.IpPort), "/UserDisconnect -U " + UserToDisconnect + ";");
                 }
             });
         }
 
-        private static void HandleMessage(string MessageStringC, string IpPortC)
+        internal static void HandleMessage(string MessageStringC, IClientInfo Client)
         {
             bool ValidSender = false;
             string Sender = null;
             string Message = AuxiliaryServerWorker.GetElement(MessageStringC, "-Content ", ";");
-            foreach (Session Sess in Sessions)
+            if (Sessions.Any(S => S.IpPort.Equals(Client.RemoteIPv4)))
             {
-                if (Sess.IpPort == IpPortC)
-                {
-                    ValidSender = true;
-                    Sender = Sess.Username;
-                }
+                ValidSender = true;
+                Sender = Sessions.First(Session => Session.IpPort.Equals(Client.RemoteIPv4)).Username;
             }
             if (ValidSender == true)
             {
                 AuxiliaryServerWorker.WriteInfo("[" + Sender + "]: " + Message);
-                foreach (Session Sessn in Sessions)
+                foreach(IClientInfo Cl in ServerNetworking.AntVaultServer.GetConnectedClients().Values)
                 {
-                    Server.AntVaultServer.Send(Sessn.IpPort, "/Message -U " + Sender + " -Content " + Message + ";");
+                    if (Sessions.Any(S => S.IpPort.Equals(Cl.RemoteIPv4)))
+                    {
+                        ServerNetworking.AntVaultServer.SendMessage(Cl.Id, "/Message -U " + Sender + " -Content " + Message + ";");
+                    }
                 }
             }
             else
             {
-                AuxiliaryServerWorker.WriteError("Could not broadcast that message from " + IpPortC + " due to improper formatting");
+                AuxiliaryServerWorker.WriteError("Could not broadcast that message from " + Client.RemoteIPv4 + " due to improper formatting");
             }
         }
 
-        private static async Task DoAuthenticationAsync(string MessageString, string IpPortC)
+        internal static async Task DoAuthenticationAsync(string MessageString, IClientInfo Client)
         {
             string UsernameC = AuxiliaryServerWorker.GetElement(MessageString, "/Login -U ", " -P");
             string PasswordC = AuxiliaryServerWorker.GetElement(MessageString, "-P ", ";");
             if (Usernames.Contains(UsernameC) == true && Passwords[Usernames.IndexOf(UsernameC)] == PasswordC)
             {
-                AuxiliaryServerWorker.WriteOK(IpPortC + " successfully authenticated as " + UsernameC);
+                AuxiliaryServerWorker.WriteOK(Client.RemoteIPv4 + " successfully authenticated as " + UsernameC);
                 Session Sess = new Session()
                 {
-                    IpPort = IpPortC,
+                    IpPort = Client.RemoteIPv4,
                     Username = UsernameC,
                     LoginTime = DateTime.Now,
                     ProfilePicture = ProfilePictures[Usernames.IndexOf(UsernameC)],
@@ -401,43 +334,43 @@ namespace AntVault3_Server.ServerWorkers
                     Status = Statuses[Usernames.IndexOf(UsernameC)]
                 };
                 Sessions.Add(Sess);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC,"/AcceptConnection"));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendMessage(Client.Id,"/AcceptConnection"));
                 AuxiliaryServerWorker.WriteInfo("Created new session for " + UsernameC);
                 OnlineUsers.Add(Sess.Username);
                 OnlineProfilePictures.Add(Sess.ProfilePicture);
                 AuxiliaryServerWorker.WriteInfo("Sending personal profile data to " + UsernameC + "...");
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, "/UserStringInfo -U " + UsernameC + " -S " + Sess.Status + ";"));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/UserStringInfo -U " + UsernameC + " -S " + Sess.Status + ";"));
                 await Task.Delay(50);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, "/UserProfilePictureMode"));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/UserProfilePictureMode"));
                 await Task.Delay(50);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, AuxiliaryServerWorker.GetBytesFromBitmap(Sess.ProfilePicture)));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, AuxiliaryServerWorker.GetBytesFromBitmap(Sess.ProfilePicture)));
                 await Task.Delay(50);
                 //^Profile picture
                 AuxiliaryServerWorker.WriteInfo("Sent " + UsernameC + " their profile picture");
                 //vCollections
                 await Task.Delay(50);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, "/UserFriendsListMode"));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/UserFriendsListMode"));
                 await Task.Delay(50);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, AuxiliaryServerWorker.GetBytesFromStringCollection(Sess.Friends)));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, AuxiliaryServerWorker.GetBytesFromStringCollection(Sess.Friends)));
                 await Task.Delay(50);
                 AuxiliaryServerWorker.WriteInfo("Sent " + UsernameC + " their friends list");
                 await Task.Delay(50);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, "/OnlineUsersListMode"));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/OnlineUsersListMode"));
                 await Task.Delay(50);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, AuxiliaryServerWorker.GetBytesFromStringCollection(OnlineUsers)));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, AuxiliaryServerWorker.GetBytesFromStringCollection(OnlineUsers)));
                 AuxiliaryServerWorker.WriteInfo("Sent " + UsernameC + " list of current online users");
                 await Task.Delay(50);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, "/OnlineProfilePicturesMode"));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/OnlineProfilePicturesMode"));
                 await Task.Delay(50);
-                await Task.Run(() => Server.AntVaultServer.Send(IpPortC, AuxiliaryServerWorker.GetBytesFromBitmapCollection(OnlineProfilePictures)));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, AuxiliaryServerWorker.GetBytesFromBitmapCollection(OnlineProfilePictures)));
                 AuxiliaryServerWorker.WriteInfo("Sent " + UsernameC + " list of current online user profile pictures");
                 await Task.Run(() => NewUserUpdatePulseAsync(UsernameC, Sess.Status, Sess.ProfilePicture));
                 AuxiliaryServerWorker.WriteInfo("Sent new user update pulse to alll clients");
             }
             else
             {
-                AuxiliaryServerWorker.WriteError(IpPortC + " tried to authenticate as " + UsernameC + " and failed");
-                Server.AntVaultServer.Send(IpPortC, "/DenyConnection");
+                AuxiliaryServerWorker.WriteError(Client.RemoteIPv4 + " tried to authenticate as " + UsernameC + " and failed");
+                ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/DenyConnection");
             }
         }
 
@@ -445,22 +378,23 @@ namespace AntVault3_Server.ServerWorkers
         {
             foreach (Session Sess in Sessions)
             {
-                await Task.Run(() => Server.AntVaultServer.Send(Sess.IpPort, "/NewUser -U " + Username + " -S " + Status + ";"));
-                await Task.Run(() => Server.AntVaultServer.Send(Sess.IpPort, AuxiliaryServerWorker.GetBytesFromBitmap(ProfilePicture)));
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(AuxiliaryServerWorker.GetClientIDFromIpPort(Sess.IpPort), "/NewUser -U " + Username + " -S " + Status + ";"));
+                await Task.Delay(50);
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(AuxiliaryServerWorker.GetClientIDFromIpPort(Sess.IpPort), AuxiliaryServerWorker.GetBytesFromBitmap(ProfilePicture)));
             }
         }
 
         internal static void UpdateStatus(string Text)
         {
             AuxiliaryServerWorker.WriteInfo("Entering status update mode");
-            Server.ServerStatus = Text;
-            foreach(string Client in Server.AntVaultServer.ListClients())
+            ServerNetworking.ServerStatus = Text;
+            foreach(IClientInfo Client in ServerNetworking.AntVaultServer.GetConnectedClients().Values)
             {
-                Server.AntVaultServer.Send(Client, "/ServerStatus " + Server.ServerStatus + ";");
+                ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/ServerStatus " + ServerNetworking.ServerStatus + ";");
                 AuxiliaryServerWorker.WriteInfo("Sent status update pulse to " + Client);
             }
             AuxiliaryServerWorker.WriteInfo("Updating config file...");
-            string NewConfig = "/IP " + AuxiliaryServerWorker.ReadFromConfig("IP") + "\\" + Environment.NewLine + "/Port " + AuxiliaryServerWorker.ReadFromConfig("Port") + "\\" + Environment.NewLine + "/Status " + Server.ServerStatus + "\\";
+            string NewConfig = "/IP " + AuxiliaryServerWorker.ReadFromConfig("IP") + "\\" + Environment.NewLine + "/Port " + AuxiliaryServerWorker.ReadFromConfig("Port") + "\\" + Environment.NewLine + "/Status " + ServerNetworking.ServerStatus + "\\";
             try
             {
                 File.WriteAllText(AuxiliaryServerWorker.ConfigDir, NewConfig);

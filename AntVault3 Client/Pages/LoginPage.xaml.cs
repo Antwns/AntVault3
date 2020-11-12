@@ -38,7 +38,7 @@ namespace AntVault3_Client.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoginMenuPlayer(true, null);
-            Task.Run(() => MainClientWorker.Connect());
+            Task.Run(() => ClientNetworking.Connect());
         }
 
         private void UsernameTextBox_MouseEnter(object sender, MouseEventArgs e)
@@ -75,7 +75,7 @@ namespace AntVault3_Client.Pages
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            MainClientWorker.Send("/Login -U " + UsernameTextBox.Text + " -P " + PasswordTextBox.Password + ";");
+            ClientNetworking.AntVaultClient.SendMessage("/Login -U " + UsernameTextBox.Text + " -P " + PasswordTextBox.Password + ";");
         }
 
         internal static void LoginMenuPlayer(bool Play, byte[] BytesToPlay)

@@ -1,30 +1,27 @@
 ﻿using System;
-using WatsonTcp;
+using System.Threading.Tasks;
+using SimpleSockets;
+using SimpleSockets.Messaging.Metadata;
+using SimpleSockets.Server;
 
 namespace AntVault3_Server.ServerWorkers
 {
     class ServerNetworking
     {
-        internal WatsonTcpServer AntVaultServer = null;
+        internal static SimpleSocketListener AntVaultServer = new SimpleSocketTcpListener();
         
-        internal ServerNetworking()
-        {
-            AntVaultServer = new WatsonTcpServer(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
-        }
-        
-        bool SetUpEvents = false;
+        static bool SetUpEvents = false;
+        static bool NewProfilePictureMode;
+        static bool GetUserPageMode;
 
-        internal string ServerStatus = null;
+        internal static string ServerStatus = null;
 
-        internal void StartServer()
+        internal static void StartServer()
         {
             if (SetUpEvents == false)
             {
-                AntVaultServer.Events.ExceptionEncountered += Events_ExceptionEncountered;
-                AntVaultServer.Keepalive.EnableTcpKeepAlives = true;
-                AntVaultServer.Keepalive.TcpKeepAliveInterval = 5;
-                AntVaultServer.Keepalive.TcpKeepAliveTime = 5;
-                AntVaultServer.Settings.AcceptInvalidCertificates = true;
+                AntVaultServer.MessageReceived += MessageReceived;
+                AntVaultServer.BytesReceived += BytesReceived;
                 SetUpEvents = true;
                 AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
             }
@@ -39,7 +36,7 @@ namespace AntVault3_Server.ServerWorkers
             MainServerWorker.CheckUserPages();
             try
             {
-                AntVaultServer.Start();
+                AntVaultServer.StartListening(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
                 AuxiliaryServerWorker.WriteOK("Server started successfully on " + AuxiliaryServerWorker.ReadFromConfig("IP") + ":" + AuxiliaryServerWorker.ReadFromConfig("Port"));
             }
             catch (Exception exc)
@@ -47,22 +44,77 @@ namespace AntVault3_Server.ServerWorkers
                 AuxiliaryServerWorker.WriteError("Server could not be started due to " + exc);
             }
         }
-        internal void StopServer()
+
+        private static void BytesReceived(IClientInfo Client, byte[] MessageBytes)
+        {
+            string MessageString = AuxiliaryServerWorker.GetStringFromBytes(MessageBytes);
+            if (MessageString.Contains("�PNG") == false)
+            {
+                AuxiliaryServerWorker.WriteDebug(MessageString);
+            }
+            else
+            {
+                AuxiliaryServerWorker.WriteDebug("[PNG]");
+            }
+            if(NewProfilePictureMode == true)
+            {
+                NewProfilePictureMode = false;
+                Task.Run(() => MainServerWorker.UpdateProfilePicture(Client, MessageBytes));
+            }
+        }
+
+        private static void MessageReceived(IClientInfo Client, string MessageString)
+        {
+            if (MessageString.StartsWith("/ServerStatus?"))
+            {
+                Task.Run(() => MainServerWorker.UpdateStatus(ServerStatus));
+            }
+            if (MessageString.StartsWith("/ServerTheme?"))
+            {
+                Task.Run(() => MainServerWorker.UpdateTheme(Client));
+            }
+            if (MessageString.StartsWith("/Login"))
+            {
+                Task.Run(() => MainServerWorker.DoAuthenticationAsync(MessageString, Client));
+            }
+            if (MessageString.StartsWith("/Message"))
+            {
+                Task.Run(() => MainServerWorker.HandleMessage(MessageString, Client));
+            }
+            if (MessageString.StartsWith("/Disconnect"))
+            {
+                Task.Run(() => MainServerWorker.HandleDisconnect(MessageString, Client));
+            }
+            if (MessageString.StartsWith("/ServerLoginScreen?"))
+            {
+                Task.Run(() => MainServerWorker.UpdateLoginScreen(Client));
+            }
+            if (MessageString.StartsWith("/NewProfilePicture"))
+            {
+                NewProfilePictureMode = true;
+            }
+            if (MessageString.StartsWith("/GetMyPage") == true || GetUserPageMode == true)
+            {
+                GetUserPageMode = true;
+            }
+            if (GetUserPageMode == true)
+            {
+                GetUserPageMode = false;
+                Task.Run(() => MainServerWorker.SendUserPageAsync(Client));
+            }
+        }
+
+        internal static void StopServer()
         {
             try
             {
-                AntVaultServer.Stop();
+                AntVaultServer.Dispose();
                 AuxiliaryServerWorker.WriteOK("Server stopped successfully");
             }
             catch (Exception exc)
             {
                 AuxiliaryServerWorker.WriteError("Server could not be stopped due to " + exc);
             }
-        }
-
-        private void Events_ExceptionEncountered(object sender, ExceptionEventArgs e)
-        {
-            AuxiliaryServerWorker.WriteError(e.Exception.ToString());
         }
     }
 }

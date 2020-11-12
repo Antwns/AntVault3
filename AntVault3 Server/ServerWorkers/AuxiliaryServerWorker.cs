@@ -1,8 +1,10 @@
-﻿using System;
+﻿using SimpleSockets.Messaging.Metadata;
+using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
@@ -190,6 +192,12 @@ namespace AntVault3_Server.ServerWorkers
                 CollectionStream.Dispose();
                 return CollectionArray;
             }
+        }
+
+        internal static int GetClientIDFromIpPort(string IpPort)
+        {
+            int ID = ServerNetworking.AntVaultServer.GetConnectedClients().First(Client => Client.Value.RemoteIPv4.Equals(IpPort)).Value.Id;
+            return ID;
         }
         #endregion
     }
