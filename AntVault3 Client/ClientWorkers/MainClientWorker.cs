@@ -8,6 +8,7 @@ using System.IO;
 using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using WatsonTcp;
 using WpfAnimatedGif;
@@ -39,6 +40,7 @@ namespace AntVault3_Client.ClientWorkers
         static bool NewLoginScreenMode;
         static bool NewProfilePictureMode;
         static bool HasSetNewProfilePicture;
+        static bool CurrentPageUpdateMode;
 
         internal static ClientNetworking Client = new ClientNetworking();
         internal static void Disconnect()
@@ -251,6 +253,19 @@ namespace AntVault3_Client.ClientWorkers
                     HasSetNewUser = false;
                 }
             }
+            if (MessageString.StartsWith("/YourPage") == true || CurrentPageUpdateMode == true)
+            {
+                if (MessageString.StartsWith("/YourPage") == true && CurrentPageUpdateMode == false)
+                {
+                    CurrentPageUpdateMode = true;
+                }
+                else
+                {
+                    CurrentPageUpdateMode = false;
+                    Task.Run(() => AssignCurrentUserPage(e.Data));
+                    Console.WriteLine("Updated " + CurrentUser + "'s profile page");
+                }
+            }
             if (MessageString.StartsWith("/UserDisconnect"))
             {
                 Task.Run(() => HadndleDisconnect(MessageString));
@@ -259,6 +274,17 @@ namespace AntVault3_Client.ClientWorkers
             {
                 Task.Run(() => HandleMessage(MessageString));
             }
+        }
+
+        private static void AssignCurrentUserPage(byte[] Data)
+        {
+            System.Windows.Controls.Page CurrentUserPage = AuxiliaryClientWorker.GetPageFromBytes(Data);
+            WindowController.ProfilePage.Content = CurrentUserPage.Content;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                WindowController.MainPage.MyPageFrame.Content = WindowController.ProfilePage;
+                //App.AppendCurrentUserPage(CurrentUserPage);
+            });
         }
 
         private static void UpdateProfilePicture(string UserToUpdate, byte[] Data)

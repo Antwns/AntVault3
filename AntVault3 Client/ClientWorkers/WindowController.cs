@@ -6,5 +6,6 @@ namespace AntVault3_Client.ClientWorkers
         public static Pages.MainPage MainPage = new Pages.MainPage();
         public static Pages.LoginPage LoginPage = new Pages.LoginPage();
         public static Pages.OptionsPage OptionsPage = new Pages.OptionsPage();
+        public static Pages.ProfilePage ProfilePage = new Pages.ProfilePage();
     }
 }

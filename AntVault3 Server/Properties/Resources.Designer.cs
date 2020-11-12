@@ -81,6 +81,26 @@ namespace AntVault3_Server.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DefaultProfilePage {
+            get {
+                object obj = ResourceManager.GetObject("DefaultProfilePage", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DefaultProfilePage_xaml {
+            get {
+                object obj = ResourceManager.GetObject("DefaultProfilePage_xaml", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap DefaultProfilePicture {
@@ -93,7 +113,7 @@ namespace AntVault3_Server.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ServerLoginScreen {
+        internal static System.Drawing.Bitmap LoginMenuBg {
             get {
                 object obj = ResourceManager.GetObject("LoginMenuBg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));

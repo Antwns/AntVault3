@@ -72,10 +72,20 @@ namespace AntVault3_Server.ServerWorkers
                 return null;
             }
         }
-
         #endregion
 
         #region Data handling and integrity checks
+
+        internal static System.Windows.Controls.Page GetPageFromBytes(byte[] BytesToConvert)
+        {
+            BinaryFormatter PageFormatter = new BinaryFormatter();
+            using (MemoryStream StreamConverter = new MemoryStream(BytesToConvert))
+            {
+                System.Windows.Controls.Page PageToReturn = (System.Windows.Controls.Page)PageFormatter.Deserialize(StreamConverter);
+                return PageToReturn;
+            }
+        }
+
         internal static void CheckConfig()
         {
             WriteInfo("Checking config file...");

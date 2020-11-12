@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace AntVault3_Client.ClientWorkers
@@ -126,6 +127,16 @@ namespace AntVault3_Client.ClientWorkers
             else
             {
                 return false;
+            }
+        }
+
+        internal static Page GetPageFromBytes(byte[] BytesToConvert)
+        {
+            BinaryFormatter PageFormatter = new BinaryFormatter();
+            using (MemoryStream StreamConverter = new MemoryStream(BytesToConvert))
+            {
+                System.Windows.Controls.Page PageToReturn = (System.Windows.Controls.Page)PageFormatter.Deserialize(StreamConverter);
+                return PageToReturn;
             }
         }
     }

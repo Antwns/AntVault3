@@ -143,6 +143,11 @@ namespace AntVault3_Client
             return ChatParagraph;
         }
 
+        internal static void AppendCurrentUserPage(Page CurrentPage)
+        {
+            
+        }
+
         private static void Placeholder(object sender, MouseButtonEventArgs e)
         {
             MessageBox.Show("This");

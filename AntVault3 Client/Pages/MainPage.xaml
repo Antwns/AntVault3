@@ -128,6 +128,30 @@
                     <Button x:Name="CreditsButton" Content="Credits" Grid.Row="7" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="0,25" Grid.Column="3"/>
                 </Grid>
             </TabItem>
+            <TabItem x:Name="MyPageTab" BorderBrush="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Header="My page">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid>
+                    <Grid.Background>
+                        <SolidColorBrush Color="White" Opacity="0.5"/>
+                    </Grid.Background>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30*"/>
+                        <RowDefinition Height="685*"/>
+                        <RowDefinition Height="29*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="9*"/>
+                        <ColumnDefinition Width="226*"/>
+                        <ColumnDefinition Width="9*"/>
+                    </Grid.ColumnDefinitions>
+                    <Frame x:Name="MyPageFrame" Content="" Grid.Column="1" Grid.Row="1" NavigationUIVisibility="Hidden" Loaded="MyPageFrame_Loaded"/>
+                </Grid>
+            </TabItem>
         </TabControl>
         <Label x:Name="StatusLabel" Content="Label" Grid.Column="3" Margin="0" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.ColumnSpan="4" Foreground="White" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" FontSize="20"/>
     </Grid>

@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using WatsonTcp;
 
 namespace AntVault3_Server.ServerWorkers
@@ -29,6 +30,7 @@ namespace AntVault3_Server.ServerWorkers
         static Collection<string> OnlineUsers = new Collection<string>();
 
         static bool NewProfilePictureMode;
+        static bool GetUserPageMode;
 
         internal static void Start()
         {
@@ -41,6 +43,31 @@ namespace AntVault3_Server.ServerWorkers
             Server.StopServer();
         }
 
+        internal static void CheckUserPages()
+        {
+            foreach(string User in Usernames)
+            {
+                if (File.Exists(UserDirectories + "\\" + User + "\\" + "Page_" + User + ".AVPage"))
+                {
+                    AuxiliaryServerWorker.WriteOK("Validated " + User + "'s page");
+                }
+                else
+                {
+                    AuxiliaryServerWorker.WriteError("Could not find " + User + "'s page, generating new default page for them...");
+                    Task.Run(() => MakeDefaultPageForUser(User)); //mostly testing
+                }
+            }
+        }
+
+        private static void MakeDefaultPageForUser(string User)
+        {
+            //Page ThisPage = AuxiliaryServerWorker.GetPageFromBytes(Properties.Resources.DefaultProfilePage);
+            //Mange mage and make changes here.
+            File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + "Page_" + User + ".AVPage", Properties.Resources.DefaultProfilePage);
+            File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + "Page_" + User + ".AVPage.cs", Properties.Resources.DefaultProfilePage_xaml);
+            AuxiliaryServerWorker.WriteOK("Successfully generated " + User + "'s page");
+        }
+
         internal static void CheckServerLoginScreen()
         {
             if (File.Exists(ServerLoginScreen) == false)
@@ -48,8 +75,8 @@ namespace AntVault3_Server.ServerWorkers
                 AuxiliaryServerWorker.WriteError("Server login screen .gif file was not found. Generating new default one...");
                 try
                 {
-                    MemoryStream ServerLoginScreenStream = new MemoryStream(AuxiliaryServerWorker.GetBytesFromBitmap(Properties.Resources.ServerLoginScreen));
-                    Properties.Resources.ServerLoginScreen.Save(ServerLoginScreen, ImageFormat.Gif);
+                    MemoryStream ServerLoginScreenStream = new MemoryStream(AuxiliaryServerWorker.GetBytesFromBitmap(Properties.Resources.LoginMenuBg));
+                    Properties.Resources.LoginMenuBg.Save(ServerLoginScreen, ImageFormat.Gif);
                     AuxiliaryServerWorker.WriteOK("Successfully generated default server login screen");
                 }
                 catch (Exception exc)
@@ -195,6 +222,35 @@ namespace AntVault3_Server.ServerWorkers
                     Task.Run(() => UpdateProfilePicture(e.IpPort, e.Data));
                 }
             }
+            if (MessageString.StartsWith("/GetMyPage") == true || GetUserPageMode == true)
+            {
+                if (MessageString.StartsWith("/GetMyPage") == true && GetUserPageMode == false)
+                {
+                    GetUserPageMode = true;
+                }
+                else
+                {
+                    GetUserPageMode = false;
+                    Task.Run(() => SendUserPageAsync(e.IpPort));
+                }
+            }
+        }
+
+        private static async Task SendUserPageAsync(string IpPort)
+        {
+            string Sender = Sessions.First(S => S.IpPort.Equals(IpPort)).Username;
+            string SendersPage = UserDirectories + "\\" + Sender + "\\" + "Page_" + Sender + ".AVPage";
+            if (File.Exists(SendersPage))
+            {
+                await Server.AntVaultServer.SendAsync(IpPort, "/YourPage");
+                await Task.Delay(10);
+                await Server.AntVaultServer.SendAsync(IpPort, File.ReadAllBytes(SendersPage));
+                AuxiliaryServerWorker.WriteOK("Sent " + Sender + " their page");
+            }
+            else
+            {
+                AuxiliaryServerWorker.WriteError("Could not find " + Sender + "'s page. Therefore no page will be sent...");
+            }
         }
 
         private static async Task SendNewProfilePicturePulseAsync(string UserToUpdate, byte[] Data)
@@ -230,7 +286,7 @@ namespace AntVault3_Server.ServerWorkers
             AuxiliaryServerWorker.WriteInfo(IpPort + " requested the current server login screen");
             byte[] ServerLoginScreenBytes = File.ReadAllBytes(ServerLoginScreen);
             MemoryStream DefaultServerLoginScreenStream = new MemoryStream();
-            Properties.Resources.ServerLoginScreen.Save(DefaultServerLoginScreenStream, ImageFormat.Gif);
+            Properties.Resources.LoginMenuBg.Save(DefaultServerLoginScreenStream, ImageFormat.Gif);
             if(ServerLoginScreenBytes.Length == DefaultServerLoginScreenStream.ToArray().Length)
             {
                 AuxiliaryServerWorker.WriteInfo("Default server login screen detected");

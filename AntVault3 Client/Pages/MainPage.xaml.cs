@@ -35,5 +35,10 @@ namespace AntVault3_Client.Pages
         {
             MainClientWorker.GetNewProfilePicture();
         }
+
+        private void MyPageFrame_Loaded(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() => MainClientWorker.Client.AntVaultClient.Send("/GetMyPage"));
+        }
     }
 }

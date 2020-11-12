@@ -36,9 +36,10 @@ namespace AntVault3_Server.ServerWorkers
             MainServerWorker.CheckServerTheme();
             AuxiliaryServerWorker.WriteInfo("Checking server login screen...");
             MainServerWorker.CheckServerLoginScreen();
+            MainServerWorker.CheckUserPages();
             try
             {
-                AntVaultServer.Start();
+                AntVaultServer.StartAsync();
                 AuxiliaryServerWorker.WriteOK("Server started successfully on " + AuxiliaryServerWorker.ReadFromConfig("IP") + ":" + AuxiliaryServerWorker.ReadFromConfig("Port"));
             }
             catch (Exception exc)

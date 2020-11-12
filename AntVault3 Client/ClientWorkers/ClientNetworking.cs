@@ -35,7 +35,7 @@ namespace AntVault3_Client.ClientWorkers
             {
                 if (AntVaultClient.Connected == false)
                 {
-                    AntVaultClient.Start();
+                    AntVaultClient.StartAsync();
                 }
             }
             catch (Exception exc)

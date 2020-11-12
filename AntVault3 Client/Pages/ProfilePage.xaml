@@ -7,4 +7,5 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ProfilePage">
+    <Label Content="Label" HorizontalAlignment="Left" Margin="355,100,0,0" VerticalAlignment="Top"/>
 </Page>
