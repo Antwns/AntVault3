@@ -42,7 +42,10 @@ namespace AntVault3_Client.ClientWorkers
         internal static void UpdateProfilePicture(string UserToUpdate, byte[] Data)
         {
             CurrentProfilePictures[CurrentOnlineUsers.IndexOf(UserToUpdate)] = AuxiliaryClientWorker.GetBitmapFromBytes(Data);
-            Task.Run(() => AssignProfilePicture(Data));
+            if (UserToUpdate == CurrentUser)
+            {
+                Task.Run(() => AssignProfilePicture(Data));
+            }
         }
 
         internal static void AssignNewLoginScreen(byte[] Data)
