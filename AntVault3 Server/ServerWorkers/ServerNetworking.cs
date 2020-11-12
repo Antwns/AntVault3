@@ -39,7 +39,7 @@ namespace AntVault3_Server.ServerWorkers
             MainServerWorker.CheckUserPages();
             try
             {
-                AntVaultServer.StartAsync();
+                AntVaultServer.Start();
                 AuxiliaryServerWorker.WriteOK("Server started successfully on " + AuxiliaryServerWorker.ReadFromConfig("IP") + ":" + AuxiliaryServerWorker.ReadFromConfig("Port"));
             }
             catch (Exception exc)

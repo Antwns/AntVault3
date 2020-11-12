@@ -56,8 +56,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WatsonTcp, Version=4.4.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WatsonTcp.4.4.0.6\lib\net461\WatsonTcp.dll</HintPath>
+    <Reference Include="WatsonTcp, Version=4.5.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WatsonTcp.4.5.0.1\lib\net461\WatsonTcp.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
