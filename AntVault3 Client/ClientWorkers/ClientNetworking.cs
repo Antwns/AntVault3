@@ -134,7 +134,7 @@ namespace AntVault3_Client.ClientWorkers
             if (CurrentPageUpdateMode == true)
             {
                 CurrentPageUpdateMode = false;
-                Task.Run(() => MainClientWorker.AssignCurrentUserPage(MessageByte));
+                //Task.Run(() => MainClientWorker.AssignCurrentUserPage(MessageByte));//Disabled due to breaking the app. Will work on this in the future
                 Console.WriteLine("Updated " + MainClientWorker.CurrentUser + "'s profile page");
             }
         }
