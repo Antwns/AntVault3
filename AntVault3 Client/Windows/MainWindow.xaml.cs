@@ -33,7 +33,7 @@ namespace AntVault3_Client.Windows
             {
                 try
                 {
-                    MainClientWorker.SendMessage("/Disconnect -Content closed the app;");
+                    ClientNetworking.AntVaultClient.SendMessage("/Disconnect -Content closed the app;");
                 }
                 catch (Exception exc)
                 {
