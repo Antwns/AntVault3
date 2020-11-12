@@ -144,11 +144,11 @@ namespace AntVault3_Client.ClientWorkers
             try
             {
                 Application.Current.Dispatcher.Invoke(() =>
-            {
+                {
 
-                WindowController.MainPage.MainChatTextBox.Document.Blocks.Add(App.AppendMessage(MessageString));
+                    WindowController.MainPage.MainChatTextBox.Document.Blocks.Add(App.AppendMessage(MessageString));
 
-            });
+                });
             }
             catch (Exception exc)
             {
