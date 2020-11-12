@@ -26,8 +26,6 @@ namespace AntVault3_Client.ClientWorkers
         internal static Collection<string> CurrentStatuses = new Collection<string>();
         internal static Collection<Bitmap> CurrentProfilePictures = new Collection<Bitmap>();
 
-
-
         internal static ClientNetworking Client = new ClientNetworking();
 
         internal static void AssignCurrentUserPage(byte[] Data)

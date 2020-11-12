@@ -26,17 +26,6 @@ namespace AntVault3_Server.ServerWorkers
         static Collection<Bitmap> ProfilePictures = new Collection<Bitmap>();
         static Collection<Bitmap> OnlineProfilePictures = new Collection<Bitmap>();
         static Collection<string> OnlineUsers = new Collection<string>();
-
-        internal static void Start()
-        {
-            ServerNetworking.StartServer();
-        }
-
-        internal static void Stop()
-        {
-            ServerNetworking.StopServer();
-        }
-
         internal static void CheckUserPages()
         {
             foreach(string User in Usernames)
@@ -303,12 +292,9 @@ namespace AntVault3_Server.ServerWorkers
             if (ValidSender == true)
             {
                 AuxiliaryServerWorker.WriteInfo("[" + Sender + "]: " + Message);
-                foreach(IClientInfo Cl in ServerNetworking.AntVaultServer.GetConnectedClients().Values)
+                foreach (IClientInfo Cl in ServerNetworking.AntVaultServer.GetConnectedClients().Values)
                 {
-                    if (Sessions.Any(S => S.IpPort.Equals(Cl.RemoteIPv4)))
-                    {
-                        ServerNetworking.AntVaultServer.SendMessage(Cl.Id, "/Message -U " + Sender + " -Content " + Message + ";");
-                    }
+                    ServerNetworking.AntVaultServer.SendMessage(Cl.Id, "/Message -U " + Sender + " -Content " + Message + ";");
                 }
             }
             else

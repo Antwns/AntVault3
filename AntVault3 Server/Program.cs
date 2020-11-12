@@ -15,12 +15,12 @@ namespace AntVault3_Server
             {
                 if(Command.ToLower() == "/start")
                 {
-                    MainServerWorker.Start();
+                    ServerNetworking.StartServer();
                     Command = Console.ReadLine();
                 }
                 else if(Command.ToLower() == "/stop")
                 {
-                    MainServerWorker.Stop();
+                    ServerNetworking.StopServer();
                     Command = Console.ReadLine();
                 }
                 else if(Command.ToLower().StartsWith("/updatestatus"))
