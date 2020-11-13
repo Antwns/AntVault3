@@ -161,7 +161,7 @@
     <Resource Include="Resources\BellWithCheckmark.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\DefaultCover.bmp" />
+    <Resource Include="Resources\DefaultCover.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -36,7 +36,6 @@
         <Rectangle Fill="Black" Stroke="White" Grid.Column="8" Grid.RowSpan="11"/>
         <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7"/>
         <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7" Grid.Row="10"/>
-        <Image x:Name="CoverPicture" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" Source="pack://siteoforigin:,,,/Resources/DefaultCover.bmp" Margin="0" Stretch="Fill"/>
         <Rectangle Grid.Column="1" Fill="Black" Grid.Row="3" Stroke="White" Grid.ColumnSpan="7"/>
         <RichTextBox x:Name="ProfilePageRichTextBox" Grid.Column="1" Grid.Row="4" Grid.RowSpan="6" Grid.ColumnSpan="7" Background="White" BorderBrush="Black" BorderThickness="3" TextChanged="ProfilePageRichTextBox_TextChanged">
             <FlowDocument>
@@ -48,5 +47,6 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
+        <Image x:Name="CoverPicture" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" Source="/AntVault3 Client;component/Resources/DefaultCover.bmp" Margin="0"/>
     </Grid>
 </Page>

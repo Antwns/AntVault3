@@ -81,10 +81,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\DefaultProfilePicture.png" />
+    <Resource Include="Resources\DefaultProfilePicture.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\LoginMenuBg.gif" />
+    <Resource Include="Resources\LoginMenuBg.gif" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ServerTheme.wav">
@@ -92,7 +92,7 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\defaultcover.bmp" />
+    <Resource Include="Resources\defaultcover.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

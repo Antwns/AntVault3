@@ -35,7 +35,6 @@ namespace AntVault3_Client.ClientWorkers
             App.Current.Dispatcher.Invoke(() =>
             {
                 WindowController.MainPage.MyPageFrame.Content = WindowController.ProfilePage;
-                //App.AppendCurrentUserPage(CurrentUserPage);
             });
         }
 

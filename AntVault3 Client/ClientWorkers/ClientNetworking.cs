@@ -67,7 +67,7 @@ namespace AntVault3_Client.ClientWorkers
 
             string MessageString = AuxiliaryClientWorker.GetStringFromBytes(MessageByte);//Translates stuff for debugging purposes
             #region debugging
-            if (MessageString.StartsWith("�PNG") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.Contains("WAVEfmt") == false && MessageString.Contains("GIF89a") == false)
+            if (MessageString.StartsWith("�PNG") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.Contains("WAVEfmt") == false && MessageString.Contains("GIF89a") == false && MessageString.Contains("2005/10/xaml/entry") == false)
             {
                 Console.WriteLine("[Debug]: " + MessageString);
             }
@@ -86,6 +86,10 @@ namespace AntVault3_Client.ClientWorkers
             else if (MessageString.Contains("GIF89a") == true && MessageString.Contains("WAVEfmt") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.StartsWith("�PNG") == false)
             {
                 Console.WriteLine("[GIF]");
+            }
+            else if(MessageString.Contains("2005/10/xaml/entry") && MessageString.Contains("WAVEfmt") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.StartsWith("�PNG") == false)
+            {
+                Console.WriteLine("[XAML]");
             }
             else
             {

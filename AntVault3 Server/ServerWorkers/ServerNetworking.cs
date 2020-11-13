@@ -15,7 +15,6 @@ namespace AntVault3_Server.ServerWorkers
         
         static bool SetUpEvents = false;
         static bool NewProfilePictureMode;
-        static bool GetUserPageMode;
 
         internal static string ServerStatus = null;
 
@@ -107,18 +106,9 @@ namespace AntVault3_Server.ServerWorkers
             {
                 NewProfilePictureMode = true;
             }
-            if (MessageString.StartsWith("/GetMyPage") == true || GetUserPageMode == true)
-            {
-                GetUserPageMode = true;
-            }
-            if (GetUserPageMode == true)
-            {
-                GetUserPageMode = false;
-                Task.Run(() => MainServerWorker.SendUserPageAsync(Client));
-            }
         }
 
-        internal static void StopServer()
+            internal static void StopServer()
         {
             try
             {
