@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using AntVault3_Server.Resources;
 
 namespace AntVault3_Server.ServerWorkers
 {
@@ -78,13 +79,15 @@ namespace AntVault3_Server.ServerWorkers
 
         #region Data handling and integrity checks
 
-        internal static System.Windows.Controls.Page GetPageFromBytes(byte[] BytesToConvert)
+        internal static byte[] GetBytesFromClass(AVPage PageToConvert)
         {
-            BinaryFormatter PageFormatter = new BinaryFormatter();
-            using (MemoryStream StreamConverter = new MemoryStream(BytesToConvert))
+            BinaryFormatter AVPageFormatter = new BinaryFormatter();
+            using (MemoryStream CollectionStream = new MemoryStream())
             {
-                System.Windows.Controls.Page PageToReturn = (System.Windows.Controls.Page)PageFormatter.Deserialize(StreamConverter);
-                return PageToReturn;
+                AVPageFormatter.Serialize(CollectionStream, PageToConvert);
+                byte[] PageArray = CollectionStream.ToArray();
+                CollectionStream.Dispose();
+                return PageArray;
             }
         }
 

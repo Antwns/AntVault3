@@ -72,31 +72,21 @@ namespace AntVault3_Server.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DefaultCover {
+            get {
+                object obj = ResourceManager.GetObject("DefaultCover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /U User /P User /S Default Status..
         /// </summary>
         internal static string DefaultDatabase {
             get {
                 return ResourceManager.GetString("DefaultDatabase", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] DefaultProfilePage {
-            get {
-                object obj = ResourceManager.GetObject("DefaultProfilePage", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] DefaultProfilePage_xaml {
-            get {
-                object obj = ResourceManager.GetObject("DefaultProfilePage_xaml", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         

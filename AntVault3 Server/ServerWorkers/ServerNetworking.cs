@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using SimpleSockets;
@@ -36,7 +37,9 @@ namespace AntVault3_Server.ServerWorkers
             MainServerWorker.CheckServerTheme();
             AuxiliaryServerWorker.WriteInfo("Checking server login screen...");
             MainServerWorker.CheckServerLoginScreen();
-            MainServerWorker.CheckUserPages();
+            Thread PageCheckerThread = new Thread(MainServerWorker.CheckPages);
+            PageCheckerThread.SetApartmentState(ApartmentState.STA);
+            PageCheckerThread.Start();
             try
             {
                 AntVaultServer.StartListening(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));

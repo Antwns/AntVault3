@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace AntVault3_Server.Resources
 {
-    [Serializable()]
+    [Serializable]
 
     public class Session
     {

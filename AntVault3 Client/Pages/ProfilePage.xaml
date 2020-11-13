@@ -7,5 +7,46 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ProfilePage">
-    <Label Content="Label" HorizontalAlignment="Left" Margin="355,100,0,0" VerticalAlignment="Top"/>
+    <Grid Margin="0" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="11*"/>
+            <RowDefinition/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="11*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Rectangle Fill="Black" Margin="0" Stroke="White" Grid.RowSpan="11"/>
+        <Rectangle Fill="Black" Stroke="White" Grid.Column="8" Grid.RowSpan="11"/>
+        <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7"/>
+        <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7" Grid.Row="10"/>
+        <Image x:Name="CoverPicture" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" Source="pack://siteoforigin:,,,/Resources/DefaultCover.bmp" Margin="0" Stretch="Fill"/>
+        <Rectangle Grid.Column="1" Fill="Black" Grid.Row="3" Stroke="White" Grid.ColumnSpan="7"/>
+        <RichTextBox x:Name="ProfilePageRichTextBox" Grid.Column="1" Grid.Row="4" Grid.RowSpan="6" Grid.ColumnSpan="7" Background="White" BorderBrush="Black" BorderThickness="3" TextChanged="ProfilePageRichTextBox_TextChanged">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="Welcome to my page!"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="This is a rich textbox! It can contain images and text! Means you can format it as you like!"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+    </Grid>
 </Page>

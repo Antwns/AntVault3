@@ -64,7 +64,11 @@
                     <Grid.Background>
                         <SolidColorBrush Color="#FFE5E5E5" Opacity="0.5"/>
                     </Grid.Background>
-                    <RichTextBox x:Name="MainChatTextBox" Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderBrush="White" SelectionBrush="#FF3F749E" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" BorderThickness="3" IsDocumentEnabled="True" IsReadOnly="True" IsReadOnlyCaretVisible="True" TextChanged="MainChatTextBox_TextChanged"/>
+                    <RichTextBox x:Name="MainChatTextBox" Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderBrush="White" SelectionBrush="#FF3F749E" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" BorderThickness="3" IsDocumentEnabled="True" IsReadOnly="True" IsReadOnlyCaretVisible="True" TextChanged="MainChatTextBox_TextChanged" Focusable="False">
+                        <FlowDocument>
+                            <Paragraph FontSize="14.6666666666667" FontFamily="Calibri" Margin="0,0,0,13.33"/>
+                        </FlowDocument>
+                    </RichTextBox>
                     <TextBox x:Name="GeneralChatInputTextBox" Grid.Column="1" Margin="0" Grid.Row="3" TextWrapping="Wrap" Text="" Background="{x:Null}" BorderBrush="White" SelectionBrush="#FF497599" BorderThickness="3" VerticalContentAlignment="Center" FontSize="20" KeyDown="GeneralChatInputTextBox_KeyDown"/>
                 </Grid>
             </TabItem>
@@ -149,7 +153,7 @@
                         <ColumnDefinition Width="226*"/>
                         <ColumnDefinition Width="9*"/>
                     </Grid.ColumnDefinitions>
-                    <Frame x:Name="MyPageFrame" Content="" Grid.Column="1" Grid.Row="1" NavigationUIVisibility="Hidden" Loaded="MyPageFrame_Loaded"/>
+                    <Frame x:Name="MyPageFrame" Content="" Grid.Column="1" Grid.Row="1" NavigationUIVisibility="Hidden" Loaded="MyPageFrame_Loaded" Source="/AntVault3 Client;component/Pages/ProfilePage.xaml"/>
                 </Grid>
             </TabItem>
         </TabControl>

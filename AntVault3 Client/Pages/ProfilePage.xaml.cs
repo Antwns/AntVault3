@@ -24,5 +24,10 @@ namespace AntVault3_Client.Pages
         {
             InitializeComponent();
         }
+
+        private void ProfilePageRichTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

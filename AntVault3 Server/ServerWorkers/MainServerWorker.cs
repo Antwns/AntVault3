@@ -6,7 +6,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace AntVault3_Server.ServerWorkers
 {
@@ -25,29 +28,22 @@ namespace AntVault3_Server.ServerWorkers
         static Collection<Bitmap> ProfilePictures = new Collection<Bitmap>();
         static Collection<Bitmap> OnlineProfilePictures = new Collection<Bitmap>();
         static Collection<string> OnlineUsers = new Collection<string>();
-        internal static void CheckUserPages()
+        internal static void SendPageForUser(IClientInfo Client)
         {
-            foreach(string User in Usernames)
+            string Username = Sessions.First(Sess => Sess.IpPort.Equals(Client.RemoteIPv4)).Username;
+            if (File.Exists(UserDirectories + "\\" + Username + "\\" + Username + ".AVPage"))
             {
-                if (File.Exists(UserDirectories + "\\" + User + "\\" + "Page_" + User + ".AVPage"))
-                {
-                    AuxiliaryServerWorker.WriteOK("Validated " + User + "'s page");
-                }
-                else
-                {
-                    AuxiliaryServerWorker.WriteError("Could not find " + User + "'s page, generating new default page for them...");
-                    Task.Run(() => MakeDefaultPageForUser(User)); //mostly testing
-                }
+                AuxiliaryServerWorker.WriteOK("Validated " + Username + "'s page");
+                ServerNetworking.AntVaultServer.SendBytes(AuxiliaryServerWorker.GetClientIDFromIpPort(Sessions.First(Sess => Sess.Username.Equals(Username)).IpPort), File.ReadAllBytes(UserDirectories + "\\" + Username + "\\" + "Page_" + Username + ".AVPage"));
+                AuxiliaryServerWorker.WriteOK("Sent " + Username + " their page");
             }
-        }
-
-        private static void MakeDefaultPageForUser(string User)
-        {
-            //Page ThisPage = AuxiliaryServerWorker.GetPageFromBytes(Properties.Resources.DefaultProfilePage);
-            //Mange mage and make changes here.
-            File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + "Page_" + User + ".AVPage", Properties.Resources.DefaultProfilePage);
-            File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + "Page_" + User + ".AVPage.cs", Properties.Resources.DefaultProfilePage_xaml);
-            AuxiliaryServerWorker.WriteOK("Successfully generated " + User + "'s page");
+            else
+            {
+                AuxiliaryServerWorker.WriteError("Could not find " + Username + "'s page, integrity check will now follow...");
+                Thread PageCheckerThread = new Thread(CheckPages);
+                PageCheckerThread.SetApartmentState(ApartmentState.STA);
+                PageCheckerThread.Start();//mostly testing
+            }
         }
 
         internal static void CheckServerLoginScreen()
@@ -68,7 +64,30 @@ namespace AntVault3_Server.ServerWorkers
             }
             else
             {
-                AuxiliaryServerWorker.WriteOK("Found server login screen successfully");
+                AuxiliaryServerWorker.WriteOK("Loaded server login screen successfully");
+            }
+        }
+
+        internal static void CheckPages()
+        {
+            foreach (string User in Usernames)
+            {
+                if (File.Exists(UserDirectories + "\\" + User + "\\" + "UserPage.AVPage") == false)
+                {
+                    AuxiliaryServerWorker.WriteError("Couldn't find page for user ");
+                    RichTextBox RichTextBoxToAdd = new RichTextBox();
+                    FlowDocument DefaultFlowDocument = new FlowDocument();
+                    Paragraph DefaultParagraph = new Paragraph(new Run("Welcome to my page!" + Environment.NewLine + "This is a rich textbox! It can contain images and text! Means you can format it as you like!"));
+                    DefaultFlowDocument.Blocks.Add(DefaultParagraph);
+                    RichTextBoxToAdd.Document = DefaultFlowDocument;
+                    AVPage NewUserPage = new AVPage()
+                    {
+                        Banner = Properties.Resources.DefaultCover,
+                        Content = RichTextBoxToAdd,
+                    };
+                    File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + User + ".AVPage", AuxiliaryServerWorker.GetBytesFromClass(NewUserPage));
+                    AuxiliaryServerWorker.WriteOK("Successfully generated default page for " + User);
+                }
             }
         }
 
@@ -358,6 +377,9 @@ namespace AntVault3_Server.ServerWorkers
                 await Task.Delay(100);
                 await Task.Run(() => NewUserUpdatePulseAsync(UsernameC, Sess.Status, Sess.ProfilePicture));
                 AuxiliaryServerWorker.WriteInfo("Sent new user update pulse to alll clients");
+                await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/MyPageMode"));
+                await Task.Delay(100);
+                await Task.Run(() => SendPageForUser(Client));
             }
             else
             {

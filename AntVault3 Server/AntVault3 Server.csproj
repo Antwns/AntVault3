@@ -64,9 +64,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Resource Include="Resources\DefaultProfilePage.xaml.cs">
-      <DependentUpon>DefaultProfilePage.AVPage</DependentUpon>
-    </Resource>
+    <Compile Include="Resources\AVPage.cs" />
     <Compile Include="Resources\Session.cs" />
     <Compile Include="ServerWorkers\AuxiliaryServerWorker.cs" />
     <Compile Include="ServerWorkers\MainServerWorker.cs" />
@@ -94,10 +92,7 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\DefaultProfilePage.AVPage">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Resources\defaultcover.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
