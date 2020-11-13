@@ -7,7 +7,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 
 namespace AntVault3_Server.ServerWorkers
 {
@@ -203,6 +202,11 @@ namespace AntVault3_Server.ServerWorkers
             Task.Run(() => SendNewProfilePicturePulseAsync(UserToUpdate, Data));
         }
 
+        internal static void AboutUser(string UserToCheck)
+        {
+            AuxiliaryServerWorker.WriteInfo("User's information: " + Environment.NewLine + "IpPort: " + Sessions.First(Session => Session.Username.Equals(UserToCheck)).IpPort + Environment.NewLine + "Login time: " + Sessions.First(Session => Session.Username.Equals(UserToCheck)).LoginTime + Environment.NewLine + "ID: " + AuxiliaryServerWorker.GetClientIDFromIpPort(Sessions.First(Session => Session.Username.Equals(UserToCheck)).IpPort) + Environment.NewLine + "Status: " + Sessions.First(Session => Session.Username.Equals(UserToCheck)).Status);
+        }
+
         internal static void UpdateLoginScreen(IClientInfo Client)
         {
             AuxiliaryServerWorker.WriteInfo(Client.RemoteIPv4 + " requested the current server login screen");
@@ -222,7 +226,7 @@ namespace AntVault3_Server.ServerWorkers
                 {
                     Task.Run(()=> ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/NewLoginScreen"));
                     MemoryStream NewServerLoginScreenStream = new MemoryStream(File.ReadAllBytes(ServerLoginScreen));
-                    ServerNetworking.AntVaultServer.SendBytes(Client.Id, NewServerLoginScreenStream.ToArray());
+                    ServerNetworking.AntVaultServer.SendBytes(Client.Id, NewServerLoginScreenStream.ToArray(), true);
                     AuxiliaryServerWorker.WriteOK("Custom login screen sent to " + Client.RemoteIPv4);
                 }
             }
@@ -249,7 +253,7 @@ namespace AntVault3_Server.ServerWorkers
                 {
                     await Task.Run(() => ServerNetworking.AntVaultServer.SendMessage(Client.Id, "/NewTheme"));
                     MemoryStream NewServerThemeStream = new MemoryStream(File.ReadAllBytes(ServerTheme));
-                    await Task.Delay(10);
+                    await Task.Delay(50);
                     await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, NewServerThemeStream.ToArray()));
                     AuxiliaryServerWorker.WriteOK("Custom theme sent to " + Client.RemoteIPv4);
                 }
@@ -340,18 +344,18 @@ namespace AntVault3_Server.ServerWorkers
                 await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/UserFriendsListMode"));
                 await Task.Delay(50);
                 await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, AuxiliaryServerWorker.GetBytesFromStringCollection(Sess.Friends)));
-                await Task.Delay(50);
                 AuxiliaryServerWorker.WriteInfo("Sent " + UsernameC + " their friends list");
-                await Task.Delay(50);
+                await Task.Delay(100);
                 await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/OnlineUsersListMode"));
                 await Task.Delay(50);
                 await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, AuxiliaryServerWorker.GetBytesFromStringCollection(OnlineUsers)));
                 AuxiliaryServerWorker.WriteInfo("Sent " + UsernameC + " list of current online users");
-                await Task.Delay(50);
+                await Task.Delay(100);
                 await Task.Run(() => ServerNetworking.AntVaultServer.SendMessageAsync(Client.Id, "/OnlineProfilePicturesMode"));
                 await Task.Delay(50);
                 await Task.Run(() => ServerNetworking.AntVaultServer.SendBytesAsync(Client.Id, AuxiliaryServerWorker.GetBytesFromBitmapCollection(OnlineProfilePictures)));
                 AuxiliaryServerWorker.WriteInfo("Sent " + UsernameC + " list of current online user profile pictures");
+                await Task.Delay(100);
                 await Task.Run(() => NewUserUpdatePulseAsync(UsernameC, Sess.Status, Sess.ProfilePicture));
                 AuxiliaryServerWorker.WriteInfo("Sent new user update pulse to alll clients");
             }

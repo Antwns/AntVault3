@@ -24,6 +24,7 @@ namespace AntVault3_Client.ClientWorkers
         internal static SimpleSocketClient AntVaultClient;
 
         static bool HasSetupEvents = false;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
         internal static async Task ConnectAsync()
         {
@@ -38,8 +39,8 @@ namespace AntVault3_Client.ClientWorkers
             try
             {
                 AntVaultClient.StartClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
-                await Task.Run(() => AntVaultClient.SendMessage("/ServerStatus?"));
-                await Task.Run(() => App.Current.Dispatcher.Invoke(() =>
+                Task.Run(() => AntVaultClient.SendMessage("/ServerStatus?"));
+                Task.Run(() => App.Current.Dispatcher.Invoke(() =>
                 {
                     WindowController.LoginPage.ConnectButton.Content = "Loading...";
                 })
@@ -47,8 +48,8 @@ namespace AntVault3_Client.ClientWorkers
             }
             catch (Exception exc)
             {
-                await Task.Run(() => Console.WriteLine("Could not connect to the server due to " + exc));
-                await Task.Run(() => App.Current.Dispatcher.Invoke(() =>
+                Task.Run(() => Console.WriteLine("Could not connect to the server due to " + exc));
+                Task.Run(() => App.Current.Dispatcher.Invoke(() =>
                 {
                     WindowController.LoginPage.ConnectButton.Content = "ERROR-Server offline, try to Vault later.";
                 })
@@ -57,6 +58,8 @@ namespace AntVault3_Client.ClientWorkers
                 await ConnectAsync();
             }
         }
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
 
         internal static async void BytesReceived(SimpleSocketClient Client, byte[] MessageByte)
         {

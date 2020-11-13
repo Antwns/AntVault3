@@ -13,21 +13,28 @@ namespace AntVault3_Server
             string Command = Console.ReadLine();
             while(Command.ToLower() != "/exit")
             {
-                if(Command.ToLower() == "/start")
+                if (Command.ToLower() == "/start")
                 {
                     ServerNetworking.StartServer();
                     Command = Console.ReadLine();
                 }
-                else if(Command.ToLower() == "/stop")
+                else if (Command.ToLower() == "/stop")
                 {
                     ServerNetworking.StopServer();
                     Command = Console.ReadLine();
                 }
-                else if(Command.ToLower().StartsWith("/updatestatus"))
+                else if (Command.ToLower().StartsWith("/updatestatus"))
                 {
                     Command = Command + ";";
                     string NewStatus = AuxiliaryServerWorker.GetElement(Command, " ".ToUpperInvariant(), ";");
                     MainServerWorker.UpdateStatus(NewStatus);
+                    Command = Console.ReadLine();
+                }
+                else if (Command.ToLower().StartsWith("/aboutuser"))
+                {
+                    Command = Command + ";";
+                    string UserToCheck = AuxiliaryServerWorker.GetElement(Command, " ".ToUpperInvariant(), ";");
+                    MainServerWorker.AboutUser(UserToCheck);
                     Command = Console.ReadLine();
                 }
                 else
