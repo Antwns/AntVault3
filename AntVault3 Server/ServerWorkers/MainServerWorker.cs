@@ -9,8 +9,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
+using AntVault3_Common;
 
 namespace AntVault3_Server.ServerWorkers
 {
@@ -34,9 +34,18 @@ namespace AntVault3_Server.ServerWorkers
             string Username = Sessions.First(Sess => Sess.IpPort.Equals(Client.RemoteIPv4)).Username;
             if (File.Exists(UserDirectories + "\\" + Username + "\\" + Username + ".AVPage"))
             {
-                AuxiliaryServerWorker.WriteOK("Validated " + Username + "'s page");
-                ServerNetworking.AntVaultServer.SendBytes(AuxiliaryServerWorker.GetClientIDFromIpPort(Sessions.First(Sess => Sess.Username.Equals(Username)).IpPort), File.ReadAllBytes(UserDirectories + "\\" + Username + "\\" + Username + ".AVPage"));
-                AuxiliaryServerWorker.WriteOK("Sent " + Username + " their page");
+                try
+                {
+                    AuxiliaryServerWorker.WriteOK("Validated " + Username + "'s page");
+                    AVPage PageToSend = AuxiliaryServerWorker.GetAVPageFromBytes(File.ReadAllBytes(UserDirectories + "\\" + Username + "\\" + Username + ".AVPage"));
+                    AuxiliaryServerWorker.WriteOK("Loaded " + Username + "'s page");
+                    ServerNetworking.AntVaultServer.SendBytes(AuxiliaryServerWorker.GetClientIDFromIpPort(Sessions.First(Sess => Sess.Username.Equals(Username)).IpPort), File.ReadAllBytes(UserDirectories + "\\" + Username + "\\" + Username + ".AVPage"));//Testing here
+                    AuxiliaryServerWorker.WriteOK("Sent " + Username + " their page");
+                }
+                catch (Exception exc)
+                {
+                    AuxiliaryServerWorker.WriteError("Could not send " + Username + "'s page due to " + exc);
+                }
             }
             else
             {
@@ -78,19 +87,26 @@ namespace AntVault3_Server.ServerWorkers
                     AuxiliaryServerWorker.WriteError("Couldn't find page for user " + User);
                     FlowDocument DefaultFlowDocument = new FlowDocument();
                     Paragraph DefaultParagraph = new Paragraph(new Run("Welcome to my page!" + Environment.NewLine + "This is a rich textbox! It can contain images and text! Means you can format it as you like!"));
+                    System.Windows.Controls.Image SampleImage = new System.Windows.Controls.Image();
+                    SampleImage.Source = AuxiliaryServerWorker.GetBitmapImageFromBitmap(Properties.Resources.DefaultProfilePicture);
+                    SampleImage.Height = 50;
+                    SampleImage.Width = 50;
+                    DefaultParagraph.Inlines.Add(SampleImage);
                     DefaultFlowDocument.Blocks.Add(DefaultParagraph);
                     TextRange DefaultTextRange = new TextRange(DefaultFlowDocument.ContentStart, DefaultFlowDocument.ContentEnd);
-                    using (MemoryStream DefaultTextMemoryStream = new MemoryStream())
+                    MemoryStream DefaultTextMemoryStream = new MemoryStream();
+                    DefaultTextRange.Save(DefaultTextMemoryStream, DataFormats.XamlPackage);
+                    AVPage NewUserPage = new AVPage()
                     {
-                        DefaultTextRange.Save(DefaultTextMemoryStream, DataFormats.XamlPackage);
-                        AVPage NewUserPage = new AVPage()
-                        {
-                            Banner = Properties.Resources.DefaultCover,
-                            Content = DefaultTextMemoryStream.ToArray(),
-                        };
-                        File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + User + ".AVPage", AuxiliaryServerWorker.GetBytesFromClass(NewUserPage));
-                        AuxiliaryServerWorker.WriteOK("Successfully generated default page for " + User);
+                        Banner = Properties.Resources.DefaultCover,
+                        Content = DefaultTextMemoryStream.ToArray()
                     };
+                    File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + User + ".AVPage", AuxiliaryServerWorker.GetBytesFromAVPage(NewUserPage));
+                    AuxiliaryServerWorker.WriteOK("Successfully generated default page for " + User);
+                }
+                else
+                {
+                    AuxiliaryServerWorker.WriteInfo("Page for " + User + " already exists and will be validated");
                 }
             }
         }

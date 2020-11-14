@@ -37,6 +37,9 @@
     <StartupObject>AntVault3_Server.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AntVault3 Common">
+      <HintPath>..\AntVault3 Common\bin\Debug\AntVault3 Common.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -64,7 +67,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resources\AVPage.cs" />
     <Compile Include="Resources\Session.cs" />
     <Compile Include="ServerWorkers\AuxiliaryServerWorker.cs" />
     <Compile Include="ServerWorkers\MainServerWorker.cs" />
@@ -92,7 +94,7 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\defaultcover.bmp" />
+    <Resource Include="Resources\DefaultCover.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

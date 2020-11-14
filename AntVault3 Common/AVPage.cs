@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 
-namespace AntVault3_Server.Resources
+namespace AntVault3_Common
 {
-    [Serializable()]
+    [Serializable]
     public class AVPage
     {
         public Bitmap Banner { get; set; }

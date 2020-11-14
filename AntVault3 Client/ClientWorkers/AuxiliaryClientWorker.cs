@@ -5,7 +5,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Windows.Controls;
+using System.Windows;
+using AntVault3_Common;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace AntVault3_Client.ClientWorkers
@@ -53,6 +55,16 @@ namespace AntVault3_Client.ClientWorkers
                 return SourceString.Substring(StartPos, EndPos - StartPos);
             }
             return "";
+        }
+
+        internal static MemoryStream GetMemoryStreamForTextRange(byte[] BytesToConvert)
+        {
+            using(MemoryStream TextRangeConverter = new MemoryStream(BytesToConvert))
+            {
+                TextRange CurrentTextRange = new TextRange(null, null);
+                CurrentTextRange.Load(TextRangeConverter, DataFormats.XamlPackage);
+                return TextRangeConverter;
+            }
         }
 
         internal static string GetStringFromBytes(byte[] BytesToConvert)
@@ -130,12 +142,14 @@ namespace AntVault3_Client.ClientWorkers
             }
         }
 
-        internal static Page GetPageFromBytes(byte[] BytesToConvert)
+        internal static AVPage GetAVPageFromBytes(byte[] BytesToConvert)
         {
-            BinaryFormatter PageFormatter = new BinaryFormatter();
             using (MemoryStream StreamConverter = new MemoryStream(BytesToConvert))
             {
-                System.Windows.Controls.Page PageToReturn = (System.Windows.Controls.Page)PageFormatter.Deserialize(StreamConverter);
+                BinaryFormatter ClassFormatter = new BinaryFormatter();
+                StreamConverter.Position = 0;
+                object ReceivedObject = ClassFormatter.Deserialize(StreamConverter);
+                AVPage PageToReturn = (AVPage)ReceivedObject;
                 return PageToReturn;
             }
         }

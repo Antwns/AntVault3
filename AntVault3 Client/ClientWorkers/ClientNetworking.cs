@@ -33,6 +33,7 @@ namespace AntVault3_Client.ClientWorkers
             {
                 AntVaultClient.BytesReceived += BytesReceived;
                 AntVaultClient.MessageReceived += MessageReceived;
+                AntVaultClient.ObjectReceived += AntVaultClient_ObjectReceived;
                 HasSetupEvents = true;
                 Console.WriteLine("Events setup complete");
             }
@@ -57,6 +58,11 @@ namespace AntVault3_Client.ClientWorkers
                 await Task.Delay(1000);
                 await ConnectAsync();
             }
+        }
+
+        private static void AntVaultClient_ObjectReceived(SimpleSocketClient client, object obj, Type objType)
+        {
+
         }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
@@ -154,9 +160,9 @@ namespace AntVault3_Client.ClientWorkers
             }
             if (CurrentPageUpdateMode == true)
             {
+                Console.WriteLine("Received page updade for " + MainClientWorker.CurrentUser + "'s profile page");
                 CurrentPageUpdateMode = false;
-                //Task.Run(() => MainClientWorker.AssignCurrentUserPage(MessageByte));//Disabled due to breaking the app. Will work on this in the future
-                Console.WriteLine("Updated " + MainClientWorker.CurrentUser + "'s profile page");
+                Task.Run(() => MainClientWorker.AssignCurrentUserPage(MessageByte));
             }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }

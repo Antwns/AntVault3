@@ -1,5 +1,4 @@
-﻿using SimpleSockets.Messaging.Metadata;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -7,7 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using AntVault3_Server.Resources;
+using System.Windows.Media;
+using AntVault3_Common;
 
 namespace AntVault3_Server.ServerWorkers
 {
@@ -75,11 +75,21 @@ namespace AntVault3_Server.ServerWorkers
                 return null;
             }
         }
+
+        internal static AVPage GetAVPageFromBytes(byte[] BytesToConvert)
+        {
+            BinaryFormatter ClassFormatter = new BinaryFormatter();
+            using (MemoryStream StreamConverter = new MemoryStream(BytesToConvert))
+            {
+                AVPage PageToReturn = (AVPage)ClassFormatter.Deserialize(StreamConverter);
+                return PageToReturn;
+            }
+        }
         #endregion
 
         #region Data handling and integrity checks
 
-        internal static byte[] GetBytesFromClass(AVPage PageToConvert)
+        internal static byte[] GetBytesFromAVPage(AVPage PageToConvert)
         {
             BinaryFormatter AVPageFormatter = new BinaryFormatter();
             using (MemoryStream CollectionStream = new MemoryStream())
@@ -127,6 +137,17 @@ namespace AntVault3_Server.ServerWorkers
             Image ImageToSave = Image.FromStream(ImageStreamConverter);
             Bitmap BitmapToReturn = new Bitmap(ImageToSave);
             return BitmapToReturn;
+        }
+
+        internal static ImageSource GetBitmapImageFromBitmap(Bitmap InputBitmap)
+        {
+            MemoryStream BitMapConverterStream = new MemoryStream();
+            InputBitmap.Save(BitMapConverterStream, ImageFormat.Png);
+            System.Windows.Media.Imaging.BitmapImage ConvertedBitmapImage = new System.Windows.Media.Imaging.BitmapImage();
+            ConvertedBitmapImage.BeginInit();
+            ConvertedBitmapImage.StreamSource = BitMapConverterStream;
+            ConvertedBitmapImage.EndInit();
+            return ConvertedBitmapImage;
         }
 
         internal static byte[] GetBytesFromBitmap(Bitmap Data)

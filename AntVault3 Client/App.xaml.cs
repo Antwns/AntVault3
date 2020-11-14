@@ -74,6 +74,26 @@ namespace AntVault3_Client
             }
         }
 
+        internal static ImageBrush GetImageBrushForBanner(ImageSource ImageToUse)
+        {
+            ImageBrush NewCoverFillBrush = new ImageBrush(ImageToUse);
+            return NewCoverFillBrush;
+        }
+
+        internal static void AppendCurrentUserBanner(ImageSource ImageToUse, string CurrentUser)
+        {
+            try
+            {
+                ImageBrush NewCoverFillBrush = new ImageBrush(ImageToUse);
+                WindowController.ProfilePage.CoverPicture.Fill = NewCoverFillBrush;
+                Console.WriteLine("Updated " + CurrentUser + "'s cover picture successfully");
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine("Couldn't update cover picture due to " + exc);
+            }
+        }
+
         internal static Paragraph AppendMessage(string MessageString)
         {
             string Sender = "Sender";
@@ -141,11 +161,6 @@ namespace AntVault3_Client
             ChatParagraph.Inlines.Add(TextToShow);
             ChatParagraph.Inlines.Add(Environment.NewLine);
             return ChatParagraph;
-        }
-
-        internal static void AppendCurrentUserPage(Page CurrentPage)
-        {
-            
         }
 
         private static void Placeholder(object sender, MouseButtonEventArgs e)

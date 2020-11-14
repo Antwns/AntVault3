@@ -47,6 +47,6 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Image x:Name="CoverPicture" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" Source="/AntVault3 Client;component/Resources/DefaultCover.bmp" Margin="0"/>
+        <Rectangle x:Name="CoverPicture" Grid.Column="1" Margin="0" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" Fill="#FFBFBFFF"/>
     </Grid>
 </Page>

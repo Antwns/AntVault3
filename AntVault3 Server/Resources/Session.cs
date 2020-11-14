@@ -5,7 +5,6 @@ using System.Drawing;
 namespace AntVault3_Server.Resources
 {
     [Serializable]
-
     public class Session
     {
         public string IpPort { get; set; }

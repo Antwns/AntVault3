@@ -8,8 +8,11 @@ using System.IO;
 using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using WpfAnimatedGif;
+using AntVault3_Common;
+using System.Windows.Media.Imaging;
 
 namespace AntVault3_Client.ClientWorkers
 {
@@ -30,13 +33,36 @@ namespace AntVault3_Client.ClientWorkers
 
         internal static void AssignCurrentUserPage(byte[] Data)
         {
-            System.Windows.Controls.Page CurrentUserPage = AuxiliaryClientWorker.GetPageFromBytes(Data);
-            WindowController.ProfilePage.Content = CurrentUserPage.Content;
-            App.Current.Dispatcher.Invoke(() =>
+            if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Current.AVPage"))
             {
-                WindowController.MainPage.MyPageFrame.Content = WindowController.ProfilePage;
-            });
+                File.Delete(AppDomain.CurrentDomain.BaseDirectory + "Current.AVPage");
+            }
+            File.WriteAllBytes(AppDomain.CurrentDomain.BaseDirectory + "Current.AVPage", Data);
+            try
+            {
+                Console.WriteLine("Creating new page class for " + CurrentUser);
+                AVPage UserPage = AuxiliaryClientWorker.GetAVPageFromBytes(Data);
+                Console.WriteLine("Created new page class for " + CurrentUser);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        WindowController.ProfilePage.CoverPicture.Fill = new ImageBrush(AuxiliaryClientWorker.GetBitmapImageFromBitmap(UserPage.Banner));
+                        Task.Run(() => Console.WriteLine("Updated " + CurrentUser + "'s cover picture successfully"));
+                    }
+                    catch (Exception exc)
+                    {
+                        Task.Run(() => Console.WriteLine("Couldn't update cover picture due to " + exc));
+                    }
+                });
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine("Couldn't deserialize the data due to " + exc);
+            }
         }
+
+
 
         internal static void UpdateProfilePicture(string UserToUpdate, byte[] Data)
         {
@@ -108,7 +134,7 @@ namespace AntVault3_Client.ClientWorkers
         internal static void HadndleDisconnect(string MessageString)
         {
             string UserToDisconnect = AuxiliaryClientWorker.GetElement(MessageString, "-U ", ";");
-            CurrentProfilePictures.Remove(MainClientWorker.CurrentProfilePictures[MainClientWorker.CurrentOnlineUsers.IndexOf(UserToDisconnect)]);
+            CurrentProfilePictures.Remove(CurrentProfilePictures[CurrentOnlineUsers.IndexOf(UserToDisconnect)]);
             CurrentOnlineUsers.Remove(UserToDisconnect);
             try
             {
@@ -153,7 +179,6 @@ namespace AntVault3_Client.ClientWorkers
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-
                     WindowController.MainPage.MainChatTextBox.Document.Blocks.Add(App.AppendMessage(MessageString));
 
                 });

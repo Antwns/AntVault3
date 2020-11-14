@@ -25,6 +25,7 @@ namespace AntVault3_Server.ServerWorkers
                 AntVaultServer.MessageReceived += MessageReceived;
                 AntVaultServer.BytesReceived += BytesReceived;
                 AntVaultServer.ClientDisconnected += AntVaultServer_ClientDisconnected;
+                AntVaultServer.ObjectReceived += AntVaultServer_ObjectReceived;
                 SetUpEvents = true;
                 AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
             }
@@ -48,6 +49,11 @@ namespace AntVault3_Server.ServerWorkers
             {
                 AuxiliaryServerWorker.WriteError("Server could not be started due to " + exc);
             }
+        }
+
+        private static void AntVaultServer_ObjectReceived(IClientInfo client, object obj, Type type)
+        {
+            
         }
 
         private static void AntVaultServer_ClientDisconnected(IClientInfo Client, DisconnectReason Reason)
