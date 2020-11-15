@@ -33,28 +33,23 @@ namespace AntVault3_Client.ClientWorkers
 
         internal static void AssignCurrentUserPage(byte[] Data)
         {
-            if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Current.AVPage"))
-            {
-                File.Delete(AppDomain.CurrentDomain.BaseDirectory + "Current.AVPage");
-            }
-            File.WriteAllBytes(AppDomain.CurrentDomain.BaseDirectory + "Current.AVPage", Data);
             try
             {
                 Console.WriteLine("Creating new page class for " + CurrentUser);
                 AVPage UserPage = AuxiliaryClientWorker.GetAVPageFromBytes(Data);
                 Console.WriteLine("Created new page class for " + CurrentUser);
-                Application.Current.Dispatcher.Invoke(() =>
+                try
                 {
-                    try
+                    WindowController.MainPage.Dispatcher.Invoke(() =>
                     {
-                        WindowController.ProfilePage.CoverPicture.Fill = new ImageBrush(AuxiliaryClientWorker.GetBitmapImageFromBitmap(UserPage.Banner));
-                        Task.Run(() => Console.WriteLine("Updated " + CurrentUser + "'s cover picture successfully"));
-                    }
-                    catch (Exception exc)
-                    {
-                        Task.Run(() => Console.WriteLine("Couldn't update cover picture due to " + exc));
-                    }
-                });
+                        WindowController.MainPage.AssignCurrentUserCover(UserPage.Banner);
+                    });
+                    Task.Run(() => Console.WriteLine("Updated " + CurrentUser + "'s cover picture successfully"));
+                }
+                catch (Exception exc)
+                {
+                    Task.Run(() => Console.WriteLine("Couldn't update cover picture due to " + exc));
+                }
             }
             catch (Exception exc)
             {
@@ -90,7 +85,7 @@ namespace AntVault3_Client.ClientWorkers
 
         internal static async void AssignNewTheme(byte[] Data)
         {
-            App.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.Invoke(() =>
             {
                 LoginPage.LoginMenuMediaPlayer.Stop();
             });

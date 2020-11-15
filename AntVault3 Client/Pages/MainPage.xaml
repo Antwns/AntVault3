@@ -139,21 +139,47 @@
                         <GradientStop Color="White" Offset="1"/>
                     </LinearGradientBrush>
                 </TabItem.Background>
-                <Grid>
-                    <Grid.Background>
-                        <SolidColorBrush Color="White" Opacity="0.5"/>
-                    </Grid.Background>
+                <Grid Margin="0" Background="White">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30*"/>
-                        <RowDefinition Height="685*"/>
-                        <RowDefinition Height="29*"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="10*"/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="9*"/>
-                        <ColumnDefinition Width="226*"/>
-                        <ColumnDefinition Width="9*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
-                    <Frame x:Name="MyPageFrame" Content="" Grid.Column="1" Grid.Row="1" NavigationUIVisibility="Hidden" Loaded="MyPageFrame_Loaded" Source="/AntVault3 Client;component/Pages/ProfilePage.xaml"/>
+                    <Rectangle Fill="Black" Margin="0" Stroke="White" Grid.RowSpan="11"/>
+                    <Rectangle Fill="Black" Stroke="White" Grid.Column="8" Grid.RowSpan="11"/>
+                    <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7"/>
+                    <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7" Grid.Row="10"/>
+                    <Rectangle Grid.Column="1" Fill="Black" Grid.Row="3" Stroke="White" Grid.ColumnSpan="7"/>
+                    <RichTextBox x:Name="ProfilePageRichTextBox" Grid.Column="1" Grid.Row="4" Grid.RowSpan="6" Grid.ColumnSpan="7" Background="White" BorderBrush="Black" BorderThickness="3">
+                        <FlowDocument>
+                            <Paragraph>
+                                <Run Text="Welcome to my page!"/>
+                            </Paragraph>
+                            <Paragraph>
+                                <Run Text="This is a rich textbox! It can contain images and text! Means you can format it as you like!"/>
+                            </Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
+                    <Rectangle x:FieldModifier="internal" x:Name="CoverPicture" Grid.Column="1" Margin="0" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" Fill="#FFBFBFFF"/>
                 </Grid>
             </TabItem>
         </TabControl>

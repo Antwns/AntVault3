@@ -1,8 +1,11 @@
 ﻿using AntVault3_Client.ClientWorkers;
+using System;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace AntVault3_Client.Pages
 {
@@ -36,9 +39,11 @@ namespace AntVault3_Client.Pages
             MainClientWorker.GetNewProfilePicture();
         }
 
-        private void MyPageFrame_Loaded(object sender, RoutedEventArgs e)
+        internal void AssignCurrentUserCover(Bitmap Banner)
         {
-            //Task.Run(() => ClientNetworking.AntVaultClient.SendMessage("/GetMyPage"));
+            ImageBrush NewImageBrush = new ImageBrush(AuxiliaryClientWorker.GetBitmapImageFromBitmap(Banner));
+            CoverPicture.Fill = NewImageBrush;
+            Console.WriteLine("Updated current user's cover picture successfully");
         }
     }
 }

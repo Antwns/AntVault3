@@ -5,6 +5,7 @@ using System.Windows.Documents;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Input;
+using System.Threading.Tasks;
 
 namespace AntVault3_Client
 {
@@ -38,7 +39,7 @@ namespace AntVault3_Client
             {
                 Label TextToShow = new Label();
                 TextToShow.FontSize = 16;
-                TextToShow.Foreground = System.Windows.Media.Brushes.Black;
+                TextToShow.Foreground = Brushes.Black;
                 TextToShow.Content = "Uh oh... It looks like you have no friends for now :(";
                 CurrentParagraph.Inlines.Add(TextToShow);
                 CurrentParagraph.Inlines.Add(Environment.NewLine);
@@ -71,26 +72,6 @@ namespace AntVault3_Client
                     DocumentToReturn.Blocks.Add(CurrentParagraph);
                 }
                 return DocumentToReturn;
-            }
-        }
-
-        internal static ImageBrush GetImageBrushForBanner(ImageSource ImageToUse)
-        {
-            ImageBrush NewCoverFillBrush = new ImageBrush(ImageToUse);
-            return NewCoverFillBrush;
-        }
-
-        internal static void AppendCurrentUserBanner(ImageSource ImageToUse, string CurrentUser)
-        {
-            try
-            {
-                ImageBrush NewCoverFillBrush = new ImageBrush(ImageToUse);
-                WindowController.ProfilePage.CoverPicture.Fill = NewCoverFillBrush;
-                Console.WriteLine("Updated " + CurrentUser + "'s cover picture successfully");
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine("Couldn't update cover picture due to " + exc);
             }
         }
 

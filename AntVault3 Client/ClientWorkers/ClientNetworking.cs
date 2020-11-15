@@ -162,7 +162,7 @@ namespace AntVault3_Client.ClientWorkers
             {
                 Console.WriteLine("Received page updade for " + MainClientWorker.CurrentUser + "'s profile page");
                 CurrentPageUpdateMode = false;
-                Task.Run(() => MainClientWorker.AssignCurrentUserPage(MessageByte));
+                MainClientWorker.AssignCurrentUserPage(MessageByte);
             }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
