@@ -8,11 +8,9 @@ using System.IO;
 using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Media;
 using WpfAnimatedGif;
 using AntVault3_Common;
-using System.Windows.Media.Imaging;
 
 namespace AntVault3_Client.ClientWorkers
 {
@@ -29,7 +27,26 @@ namespace AntVault3_Client.ClientWorkers
         internal static Collection<string> CurrentStatuses = new Collection<string>();
         internal static Collection<Bitmap> CurrentProfilePictures = new Collection<Bitmap>();
 
-        internal static ClientNetworking Client = new ClientNetworking();
+        internal static void CheckSoundEffects()
+        {
+            if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Notification.wav") == false)
+            {
+                Console.WriteLine("Couldn't find notification sound. Generating default sound file...");
+                using (MemoryStream SoundMemoryStreamGenerator = new MemoryStream(Convert.ToInt32(Properties.Resources.Notification.Length)))
+                {
+                    Properties.Resources.Notification.CopyTo(SoundMemoryStreamGenerator);
+                    try
+                    {
+                        File.WriteAllBytes(AppDomain.CurrentDomain.BaseDirectory + "Notification.wav", SoundMemoryStreamGenerator.ToArray());
+                        Console.WriteLine("Generated default notification sound file");
+                    }
+                    catch (Exception exc)
+                    {
+                        Console.WriteLine("Couldn't generate default notification sound file due to " + exc);
+                    }
+                }
+            }
+        }
 
         internal static void AssignCurrentUserPage(byte[] Data)
         {
@@ -175,7 +192,7 @@ namespace AntVault3_Client.ClientWorkers
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     WindowController.MainPage.MainChatTextBox.Document.Blocks.Add(App.AppendMessage(MessageString));
-
+                    WindowController.MainPage.PlayMessageSound();
                 });
             }
             catch (Exception exc)
@@ -253,7 +270,6 @@ namespace AntVault3_Client.ClientWorkers
 
                 Application.Current.MainWindow.Width = 800;
                 Application.Current.MainWindow.Height = 1024;
-
             }));
         }
 

@@ -39,6 +39,7 @@ namespace AntVault3_Client.Pages
         {
             LoginMenuPlayer(true, null);
             Task.Run(() => ClientNetworking.ConnectAsync());
+            Task.Run(() => MainClientWorker.CheckSoundEffects());
         }
 
         private void UsernameTextBox_MouseEnter(object sender, MouseEventArgs e)

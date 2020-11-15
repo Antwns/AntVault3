@@ -1,6 +1,7 @@
 ﻿using AntVault3_Client.ClientWorkers;
 using System;
 using System.Drawing;
+using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,6 +45,14 @@ namespace AntVault3_Client.Pages
             ImageBrush NewImageBrush = new ImageBrush(AuxiliaryClientWorker.GetBitmapImageFromBitmap(Banner));
             CoverPicture.Fill = NewImageBrush;
             Console.WriteLine("Updated current user's cover picture successfully");
+        }
+
+        internal void PlayMessageSound()
+        {
+            using (SoundPlayer MessagePlayer = new SoundPlayer(Properties.Resources.Notification))
+            {
+                MessagePlayer.Play();
+            }
         }
     }
 }

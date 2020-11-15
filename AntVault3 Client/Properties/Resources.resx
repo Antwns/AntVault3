@@ -140,4 +140,7 @@
   <data name="Minecraft" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Minecraft.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Notification" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Notification.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>
