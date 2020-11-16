@@ -162,5 +162,11 @@
   <ItemGroup>
     <None Include="Resources\Notification.wav" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\LoadCover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Save.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -180,6 +180,21 @@
                         </FlowDocument>
                     </RichTextBox>
                     <Rectangle x:FieldModifier="internal" x:Name="CoverPicture" Grid.Column="1" Margin="0" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" Fill="#FFBFBFFF"/>
+                    <Image x:Name="LoadCoverButton" Grid.Column="7" Margin="25" Grid.Row="2" Source="/AntVault3 Client;component/Resources/LoadCover.png" ToolTip="Load new profile cover">
+                        <Image.OpacityMask>
+                            <SolidColorBrush Color="White" Opacity="0.5"/>
+                        </Image.OpacityMask>
+                    </Image>
+                    <Image x:Name="LoadRTFDoc" Grid.Column="7" Margin="25" Grid.Row="9" Source="/AntVault3 Client;component/Resources/LoadCover.png" ToolTip="Load new page content(.rtf document)">
+                        <Image.OpacityMask>
+                            <SolidColorBrush Color="White" Opacity="0.5"/>
+                        </Image.OpacityMask>
+                    </Image>
+                    <Image x:Name="SaveButton" Source="/AntVault3 Client;component/Resources/Save.png" Grid.Column="1" Margin="25" Grid.Row="1" ToolTip="Save page(And upload to server)">
+                        <Image.OpacityMask>
+                            <SolidColorBrush Color="White" Opacity="0.5"/>
+                        </Image.OpacityMask>
+                    </Image>
                 </Grid>
             </TabItem>
         </TabControl>
