@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Media;
 using WpfAnimatedGif;
 using AntVault3_Common;
+using System.Windows.Documents;
 
 namespace AntVault3_Client.ClientWorkers
 {
@@ -66,6 +67,22 @@ namespace AntVault3_Client.ClientWorkers
                 catch (Exception exc)
                 {
                     Task.Run(() => Console.WriteLine("Couldn't update cover picture due to " + exc));
+                }
+                try
+                {
+                    WindowController.MainPage.Dispatcher.Invoke(() =>
+                    {
+                        using (MemoryStream CurrentClientContentMemoryStream = new MemoryStream(UserPage.Content))
+                        {
+                            TextRange TextRangeToAppend = new TextRange(WindowController.MainPage.ProfilePageRichTextBox.Document.ContentStart, WindowController.MainPage.ProfilePageRichTextBox.Document.ContentEnd);
+                            TextRangeToAppend.Load(CurrentClientContentMemoryStream, DataFormats.Rtf);
+                        }
+                    });
+                    Console.WriteLine("Loaded content successfully");
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine("Couldn't load content due to " + exc);
                 }
             }
             catch (Exception exc)

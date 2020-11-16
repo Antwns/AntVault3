@@ -57,16 +57,6 @@ namespace AntVault3_Client.ClientWorkers
             return "";
         }
 
-        internal static MemoryStream GetMemoryStreamForTextRange(byte[] BytesToConvert)
-        {
-            using(MemoryStream TextRangeConverter = new MemoryStream(BytesToConvert))
-            {
-                TextRange CurrentTextRange = new TextRange(null, null);
-                CurrentTextRange.Load(TextRangeConverter, DataFormats.XamlPackage);
-                return TextRangeConverter;
-            }
-        }
-
         internal static string GetStringFromBytes(byte[] BytesToConvert)
         {
             string StringToReturn = Encoding.UTF8.GetString(BytesToConvert);

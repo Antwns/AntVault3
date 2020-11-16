@@ -94,14 +94,16 @@ namespace AntVault3_Server.ServerWorkers
                     DefaultParagraph.Inlines.Add(SampleImage);
                     DefaultFlowDocument.Blocks.Add(DefaultParagraph);
                     TextRange DefaultTextRange = new TextRange(DefaultFlowDocument.ContentStart, DefaultFlowDocument.ContentEnd);
-                    MemoryStream DefaultTextMemoryStream = new MemoryStream();
-                    DefaultTextRange.Save(DefaultTextMemoryStream, DataFormats.XamlPackage);
-                    AVPage NewUserPage = new AVPage()
+                    using (MemoryStream DefaultTextMemoryStream = new MemoryStream())
                     {
-                        Banner = Properties.Resources.DefaultCover,
-                        Content = DefaultTextMemoryStream.ToArray()
-                    };
-                    File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + User + ".AVPage", AuxiliaryServerWorker.GetBytesFromAVPage(NewUserPage));
+                        DefaultTextRange.Save(DefaultTextMemoryStream, DataFormats.Rtf);
+                        AVPage NewUserPage = new AVPage()
+                        {
+                            Banner = Properties.Resources.DefaultCover,
+                            Content = DefaultTextMemoryStream.ToArray()
+                        };
+                        File.WriteAllBytes(UserDirectories + "\\" + User + "\\" + User + ".AVPage", AuxiliaryServerWorker.GetBytesFromAVPage(NewUserPage));
+                    }
                     AuxiliaryServerWorker.WriteOK("Successfully generated default page for " + User);
                 }
                 else

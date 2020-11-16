@@ -18,7 +18,7 @@ namespace AntVault3_Server.ServerWorkers
 
         internal static string ServerStatus = null;
 
-        internal static void StartServer()
+        internal static async Task StartServer()
         {
             if (SetUpEvents == false)
             {
@@ -39,7 +39,7 @@ namespace AntVault3_Server.ServerWorkers
             MainServerWorker.CheckServerLoginScreen();
             Thread PageCheckerThread = new Thread(MainServerWorker.CheckPages);
             PageCheckerThread.SetApartmentState(ApartmentState.STA);
-            PageCheckerThread.Start();
+            await Task.Run(() => PageCheckerThread.Start());
             try
             {
                 AntVaultServer.StartListening(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));

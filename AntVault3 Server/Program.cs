@@ -15,7 +15,9 @@ namespace AntVault3_Server
             {
                 if (Command.ToLower() == "/start")
                 {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     ServerNetworking.StartServer();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     Command = Console.ReadLine();
                 }
                 else if (Command.ToLower() == "/stop")

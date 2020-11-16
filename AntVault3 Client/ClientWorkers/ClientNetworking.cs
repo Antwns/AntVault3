@@ -190,6 +190,11 @@ namespace AntVault3_Client.ClientWorkers
             if (MessageString.StartsWith("/DefaultTheme"))
             {
                 Console.WriteLine("Received default theme callback, will not try to update the track");
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowController.LoginPage.ConnectButton.Content = "Connect";
+                    WindowController.LoginPage.ConnectButton.IsEnabled = true;
+                });
             }
             if (MessageString.StartsWith("/NewTheme"))
             {
@@ -198,6 +203,11 @@ namespace AntVault3_Client.ClientWorkers
             if (MessageString.StartsWith("/DefaultLoginScreen"))
             {
                 Console.WriteLine("Received default login screen callback, will not try to update");
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowController.LoginPage.ConnectButton.Content = "Connect";
+                    WindowController.LoginPage.ConnectButton.IsEnabled = true;
+                });
             }
             if (MessageString.StartsWith("/NewLoginScreen"))
             {
