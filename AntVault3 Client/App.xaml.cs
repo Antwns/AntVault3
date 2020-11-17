@@ -5,7 +5,7 @@ using System.Windows.Documents;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Input;
-using System.Threading.Tasks;
+using AntLib;
 
 namespace AntVault3_Client
 {
@@ -14,6 +14,12 @@ namespace AntVault3_Client
     /// </summary>
     public partial class App : Application
     {
+        internal static MainTools AuxiliaryClientWorker = new MainTools()
+        {
+            ConfigDir = MainClientWorker.ConfigDir,
+            AppName = "AntVault3_Client",
+        };
+
         internal static FlowDocument SortFriendsList()
         {
             FlowDocument DocumentToReturn = new FlowDocument();

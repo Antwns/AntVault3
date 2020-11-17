@@ -42,7 +42,7 @@ namespace AntVault3_Client.Pages
 
         internal void AssignCurrentUserCover(Bitmap Banner)
         {
-            ImageBrush NewImageBrush = new ImageBrush(AuxiliaryClientWorker.GetBitmapImageFromBitmap(Banner));
+            ImageBrush NewImageBrush = new ImageBrush(App.AuxiliaryClientWorker.GetBitmapImageFromBitmap(Banner));
             CoverPicture.Fill = NewImageBrush;
             Console.WriteLine("Updated current user's cover picture successfully");
         }

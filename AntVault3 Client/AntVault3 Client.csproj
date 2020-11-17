@@ -87,7 +87,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Compile Include="Animations\LoginAnimations.cs" />
-    <Compile Include="ClientWorkers\AuxiliaryClientWorker.cs" />
     <Compile Include="ClientWorkers\MainClientWorker.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -167,6 +166,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AntLib\AntLib\AntLib.csproj">
+      <Project>{57387597-4fba-46f2-8faa-522a51dff580}</Project>
+      <Name>AntLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

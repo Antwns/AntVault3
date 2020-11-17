@@ -27,27 +27,27 @@ namespace AntVault3_Server.ServerWorkers
                 AntVaultServer.ClientDisconnected += AntVaultServer_ClientDisconnected;
                 AntVaultServer.ObjectReceived += AntVaultServer_ObjectReceived;
                 SetUpEvents = true;
-                AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
+                Program.AuxiliaryServerWorker.WriteOK("Event callbacks hooked successfully");
             }
-            AuxiliaryServerWorker.WriteInfo("Reading server status from config...");
-            ServerStatus = AuxiliaryServerWorker.ReadFromConfig("Status");
+            Program.AuxiliaryServerWorker.WriteInfo("Reading server status from config...");
+            ServerStatus = Program.AuxiliaryServerWorker.ReadFromConfig("Status", MainServerWorker.ConfigDir);
             MainServerWorker.CheckDatabase();
-            AuxiliaryServerWorker.WriteOK("Server status is set to " + ServerStatus);
-            AuxiliaryServerWorker.WriteInfo("Checking server theme...");
+            Program.AuxiliaryServerWorker.WriteOK("Server status is set to " + ServerStatus);
+            Program.AuxiliaryServerWorker.WriteInfo("Checking server theme...");
             MainServerWorker.CheckServerTheme();
-            AuxiliaryServerWorker.WriteInfo("Checking server login screen...");
+            Program.AuxiliaryServerWorker.WriteInfo("Checking server login screen...");
             MainServerWorker.CheckServerLoginScreen();
             Thread PageCheckerThread = new Thread(MainServerWorker.CheckPages);
             PageCheckerThread.SetApartmentState(ApartmentState.STA);
             await Task.Run(() => PageCheckerThread.Start());
             try
             {
-                AntVaultServer.StartListening(AuxiliaryServerWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryServerWorker.ReadFromConfig("Port")));
-                AuxiliaryServerWorker.WriteOK("Server started successfully on " + AuxiliaryServerWorker.ReadFromConfig("IP") + ":" + AuxiliaryServerWorker.ReadFromConfig("Port"));
+                AntVaultServer.StartListening(Program.AuxiliaryServerWorker.ReadFromConfig("IP", MainServerWorker.ConfigDir), Convert.ToInt32(Program.AuxiliaryServerWorker.ReadFromConfig("Port", MainServerWorker.ConfigDir)));
+                Program.AuxiliaryServerWorker.WriteOK("Server started successfully on " + Program.AuxiliaryServerWorker.ReadFromConfig("IP", MainServerWorker.ConfigDir) + ":" + Program.AuxiliaryServerWorker.ReadFromConfig("Port", MainServerWorker.ConfigDir));
             }
             catch (Exception exc)
             {
-                AuxiliaryServerWorker.WriteError("Server could not be started due to " + exc);
+                Program.AuxiliaryServerWorker.WriteError("Server could not be started due to " + exc);
             }
         }
 
@@ -60,20 +60,20 @@ namespace AntVault3_Server.ServerWorkers
         {
             if (MainServerWorker.Sessions.Any(Session => Session.IpPort.Equals(Client.LocalIPv4)))
             {
-                AuxiliaryServerWorker.WriteInfo("Client " + MainServerWorker.Sessions.First(Session => Session.IpPort.Equals(Client.RemoteIPv4)) + " with IP " + Client.RemoteIPv4 + " and ID " + Client.Id + " disconnected due to " + Reason.ToString());
+                Program.AuxiliaryServerWorker.WriteInfo("Client " + MainServerWorker.Sessions.First(Session => Session.IpPort.Equals(Client.RemoteIPv4)) + " with IP " + Client.RemoteIPv4 + " and ID " + Client.Id + " disconnected due to " + Reason.ToString());
             }
         }
 
         private static void BytesReceived(IClientInfo Client, byte[] MessageBytes)
         {
-            string MessageString = AuxiliaryServerWorker.GetStringFromBytes(MessageBytes);
+            string MessageString = Program.AuxiliaryServerWorker.GetStringFromBytes(MessageBytes);
             if (MessageString.Contains("�PNG") == false)
             {
-                AuxiliaryServerWorker.WriteDebug(MessageString);
+                Program.AuxiliaryServerWorker.WriteDebug(MessageString);
             }
             else
             {
-                AuxiliaryServerWorker.WriteDebug("[PNG]");
+                Program.AuxiliaryServerWorker.WriteDebug("[PNG]");
             }
             if(NewProfilePictureMode == true)
             {
@@ -119,11 +119,11 @@ namespace AntVault3_Server.ServerWorkers
             try
             {
                 AntVaultServer.Dispose();
-                AuxiliaryServerWorker.WriteOK("Server stopped successfully");
+                Program.AuxiliaryServerWorker.WriteOK("Server stopped successfully");
             }
             catch (Exception exc)
             {
-                AuxiliaryServerWorker.WriteError("Server could not be stopped due to " + exc);
+                Program.AuxiliaryServerWorker.WriteError("Server could not be stopped due to " + exc);
             }
         }
     }

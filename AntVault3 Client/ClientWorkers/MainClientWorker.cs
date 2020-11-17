@@ -12,6 +12,7 @@ using System.Windows.Media;
 using WpfAnimatedGif;
 using AntVault3_Common;
 using System.Windows.Documents;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace AntVault3_Client.ClientWorkers
 {
@@ -27,6 +28,8 @@ namespace AntVault3_Client.ClientWorkers
         internal static Collection<string> CurrentOnlineUsers = new Collection<string>();
         internal static Collection<string> CurrentStatuses = new Collection<string>();
         internal static Collection<Bitmap> CurrentProfilePictures = new Collection<Bitmap>();
+
+        internal static string ConfigDir = AppDomain.CurrentDomain.BaseDirectory + "AntVaultClient.config";
 
         internal static void CheckSoundEffects()
         {
@@ -54,7 +57,7 @@ namespace AntVault3_Client.ClientWorkers
             try
             {
                 Console.WriteLine("Creating new page class for " + CurrentUser);
-                AVPage UserPage = AuxiliaryClientWorker.GetAVPageFromBytes(Data);
+                AVPage UserPage = GetAVPageFromBytes(Data);
                 Console.WriteLine("Created new page class for " + CurrentUser);
                 try
                 {
@@ -95,7 +98,7 @@ namespace AntVault3_Client.ClientWorkers
 
         internal static void UpdateProfilePicture(string UserToUpdate, byte[] Data)
         {
-            CurrentProfilePictures[CurrentOnlineUsers.IndexOf(UserToUpdate)] = AuxiliaryClientWorker.GetBitmapFromBytes(Data);
+            CurrentProfilePictures[CurrentOnlineUsers.IndexOf(UserToUpdate)] = App.AuxiliaryClientWorker.GetBitmapFromBytes(Data);
             if (UserToUpdate == CurrentUser)
             {
                 Task.Run(() => AssignProfilePicture(Data));
@@ -109,7 +112,7 @@ namespace AntVault3_Client.ClientWorkers
                 File.Delete(AppDomain.CurrentDomain.BaseDirectory + "CustomLoginScreen.gif");
             }
             Console.WriteLine("Assigning new login screen now...");
-            Bitmap NewLoginScreenbitmap = AuxiliaryClientWorker.GetBitmapFromBytes(Data);
+            Bitmap NewLoginScreenbitmap = App.AuxiliaryClientWorker.GetBitmapFromBytes(Data);
             NewLoginScreenbitmap.Save(AppDomain.CurrentDomain.BaseDirectory + "CustomLoginScreen.gif", ImageFormat.Gif);
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -151,7 +154,7 @@ namespace AntVault3_Client.ClientWorkers
         {
             if (NewUser != CurrentUser)
             {
-                CurrentProfilePictures.Add(AuxiliaryClientWorker.GetBitmapFromBytes(Data));
+                CurrentProfilePictures.Add(App.AuxiliaryClientWorker.GetBitmapFromBytes(Data));
                 Console.WriteLine("Successfully assigned " + NewUser + "'s profile picture in " + CurrentUser + "'s profile picture list");
             }
             else
@@ -162,7 +165,7 @@ namespace AntVault3_Client.ClientWorkers
 
         internal static void HadndleDisconnect(string MessageString)
         {
-            string UserToDisconnect = AuxiliaryClientWorker.GetElement(MessageString, "-U ", ";");
+            string UserToDisconnect = App.AuxiliaryClientWorker.GetElement(MessageString, "-U ", ";");
             CurrentProfilePictures.Remove(CurrentProfilePictures[CurrentOnlineUsers.IndexOf(UserToDisconnect)]);
             CurrentOnlineUsers.Remove(UserToDisconnect);
             try
@@ -184,9 +187,9 @@ namespace AntVault3_Client.ClientWorkers
         {
             if (ClientNetworking.NewUser != CurrentUser)
             {
-                string NewUser = AuxiliaryClientWorker.GetElement(MessageString, "-U ", " -S");
+                string NewUser = App.AuxiliaryClientWorker.GetElement(MessageString, "-U ", " -S");
                 CurrentOnlineUsers.Add(NewUser);
-                string Newstatus = AuxiliaryClientWorker.GetElement(MessageString, "-S ", ";");
+                string Newstatus = App.AuxiliaryClientWorker.GetElement(MessageString, "-S ", ";");
                 CurrentStatuses.Add(Newstatus);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -226,12 +229,12 @@ namespace AntVault3_Client.ClientWorkers
 
         internal static void AssignOnlinePictures(byte[] Data)
         {
-            CurrentProfilePictures = AuxiliaryClientWorker.GetBitmapCollectionFromBytes(Data);
+            CurrentProfilePictures = App.AuxiliaryClientWorker.GetBitmapCollectionFromBytes(Data);
         }
 
         internal static void AssignOnlineUsers(byte[] Data)
         {
-            CurrentOnlineUsers = AuxiliaryClientWorker.GetStringCollectionFromBytes(Data);
+            CurrentOnlineUsers = App.AuxiliaryClientWorker.GetStringCollectionFromBytes(Data);
             foreach (string User in CurrentOnlineUsers)
             {
                 Console.WriteLine("Registered user " + User);
@@ -241,23 +244,23 @@ namespace AntVault3_Client.ClientWorkers
         internal static void AssingFriendsList(byte[] Data)
         {
             Console.WriteLine("Assigning friends list for " + CurrentUser + ", registering " + CurrentFriendsList.Count + " entries");
-            CurrentFriendsList = AuxiliaryClientWorker.GetStringCollectionFromBytes(Data);
+            CurrentFriendsList = App.AuxiliaryClientWorker.GetStringCollectionFromBytes(Data);
         }
 
         internal static void AssignProfilePicture(byte[] Data)
         {
             Console.WriteLine("Assigned profile picture for " + CurrentUser);//From this point on, consult the Github repository
-            CurrentProfilePicture = AuxiliaryClientWorker.GetBitmapFromBytes(Data);
+            CurrentProfilePicture = App.AuxiliaryClientWorker.GetBitmapFromBytes(Data);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                WindowController.MainPage.ProfilePicture.Fill = new ImageBrush(AuxiliaryClientWorker.GetBitmapImageFromBitmap(CurrentProfilePicture));
+                WindowController.MainPage.ProfilePicture.Fill = new ImageBrush(App.AuxiliaryClientWorker.GetBitmapImageFromBitmap(CurrentProfilePicture));
             });
         }
 
         internal static void AssignUserInfo(string MessageString)
         {
-            CurrentUser = AuxiliaryClientWorker.GetElement(MessageString, "-U ", " -S");
-            CurrentStatus = AuxiliaryClientWorker.GetElement(MessageString, "-S ", ";");
+            CurrentUser = App.AuxiliaryClientWorker.GetElement(MessageString, "-U ", " -S");
+            CurrentStatus = App.AuxiliaryClientWorker.GetElement(MessageString, "-S ", ";");
             Application.Current.Dispatcher.Invoke(() =>
             {
                 Application.Current.MainWindow.Title = "AntVault - " + CurrentUser;
@@ -298,7 +301,7 @@ namespace AntVault3_Client.ClientWorkers
                 Filter = "png files (*.png)|*.png",
             };
             NewProfilePictureDialog.ShowDialog(App.Current.MainWindow);
-            if (NewProfilePictureDialog.FileName != null || NewProfilePictureDialog.FileName != "" && AuxiliaryClientWorker.CheckIfImageIsPng(NewProfilePictureDialog.FileName) == true)
+            if (NewProfilePictureDialog.FileName != null || NewProfilePictureDialog.FileName != "" && App.AuxiliaryClientWorker.CheckIfImageIsPng(NewProfilePictureDialog.FileName) == true)
             {
                 ClientNetworking.AntVaultClient.SendMessage("/NewProfilePicture");
                 ClientNetworking.AntVaultClient.SendBytes(File.ReadAllBytes(NewProfilePictureDialog.FileName));
@@ -306,6 +309,18 @@ namespace AntVault3_Client.ClientWorkers
             else
             {
                 MessageBox.Show("You either did not select a file or the file selected was not of valid .png format.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        internal static AVPage GetAVPageFromBytes(byte[] BytesToConvert)
+        {
+            using (MemoryStream StreamConverter = new MemoryStream(BytesToConvert))
+            {
+                BinaryFormatter ClassFormatter = new BinaryFormatter();
+                StreamConverter.Position = 0;
+                object ReceivedObject = ClassFormatter.Deserialize(StreamConverter);
+                AVPage PageToReturn = (AVPage)ReceivedObject;
+                return PageToReturn;
             }
         }
     }

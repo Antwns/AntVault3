@@ -1,11 +1,17 @@
 ﻿using AntVault3_Server.ServerWorkers;
 using System;
 using System.Threading;
+using AntLib;
 
 namespace AntVault3_Server
 {
     class Program
     {
+        internal static MainTools AuxiliaryServerWorker = new MainTools()
+        {
+            ConfigDir = MainServerWorker.ConfigDir,
+            AppName = "AntVault3_Server",
+        };
         static void Main(string[] args)
         {
             AuxiliaryServerWorker.WriteInfo("Welcome to the AntVault 3 server.");

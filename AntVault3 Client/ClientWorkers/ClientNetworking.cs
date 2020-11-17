@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Threading;
 using SimpleSockets.Client;
 using System.Windows;
 
@@ -39,7 +38,7 @@ namespace AntVault3_Client.ClientWorkers
             }
             try
             {
-                AntVaultClient.StartClient(AuxiliaryClientWorker.ReadFromConfig("IP"), Convert.ToInt32(AuxiliaryClientWorker.ReadFromConfig("Port")));
+                AntVaultClient.StartClient(App.AuxiliaryClientWorker.ReadFromConfig("IP", MainClientWorker.ConfigDir), Convert.ToInt32(App.AuxiliaryClientWorker.ReadFromConfig("Port", MainClientWorker.ConfigDir)));
                 Task.Run(() => AntVaultClient.SendMessage("/ServerStatus?"));
                 Task.Run(() => App.Current.Dispatcher.Invoke(() =>
                 {
@@ -71,7 +70,7 @@ namespace AntVault3_Client.ClientWorkers
         {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-            string MessageString = AuxiliaryClientWorker.GetStringFromBytes(MessageByte);//Translates stuff for debugging purposes
+            string MessageString = App.AuxiliaryClientWorker.GetStringFromBytes(MessageByte);//Translates stuff for debugging purposes
             #region debugging
             if (MessageString.StartsWith("�PNG") == false && MessageString.Contains("System.Collections.ObjectModel.Collection") == false && MessageString.Contains("WAVEfmt") == false && MessageString.Contains("GIF89a") == false && MessageString.Contains("2005/10/xaml/entry") == false)
             {
@@ -180,7 +179,7 @@ namespace AntVault3_Client.ClientWorkers
             }
             if (MessageString.StartsWith("/ServerStatus"))
             {
-                string ServerStatus = AuxiliaryClientWorker.GetElement(MessageString, "/ServerStatus ", ";");
+                string ServerStatus = App.AuxiliaryClientWorker.GetElement(MessageString, "/ServerStatus ", ";");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     WindowController.LoginPage.StatusLabel.Content = ServerStatus;
@@ -235,13 +234,13 @@ namespace AntVault3_Client.ClientWorkers
             }
             if (MessageString.StartsWith("/NewProfilePicture"))
             {
-                UserToUpdateProfilePicture = AuxiliaryClientWorker.GetElement(MessageString, "-U ", ";");
+                UserToUpdateProfilePicture = App.AuxiliaryClientWorker.GetElement(MessageString, "-U ", ";");
                 Console.WriteLine("User that sent the profile picture update pulse is " + UserToUpdateProfilePicture);
                 NewProfilePictureMode = true;
             }
             if (MessageString.StartsWith("/NewUser"))
             {
-                NewUser = AuxiliaryClientWorker.GetElement(MessageString, "-U ", " -S");
+                NewUser = App.AuxiliaryClientWorker.GetElement(MessageString, "-U ", " -S");
                 Console.WriteLine("New user is " + NewUser);
                 Task.Run(() => MainClientWorker.AssignNewOnlineUser(MessageString));
                 NewOnlineUserMode = true;
