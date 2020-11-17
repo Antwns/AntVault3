@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using SimpleSockets.Client;
 using System.Windows;
+using System.Threading;
 
 namespace AntVault3_Client.ClientWorkers
 {
@@ -25,9 +26,9 @@ namespace AntVault3_Client.ClientWorkers
         static bool HasSetupEvents = false;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        internal static async Task ConnectAsync()
+        internal static void Connect()
         {
-             AntVaultClient = new SimpleSocketTcpClient();
+            AntVaultClient = new SimpleSocketTcpClient();
             if (HasSetupEvents == false)
             {
                 AntVaultClient.BytesReceived += BytesReceived;
@@ -40,7 +41,8 @@ namespace AntVault3_Client.ClientWorkers
             {
                 AntVaultClient.StartClient(App.AuxiliaryClientWorker.ReadFromConfig("IP", MainClientWorker.ConfigDir), Convert.ToInt32(App.AuxiliaryClientWorker.ReadFromConfig("Port", MainClientWorker.ConfigDir)));
                 Task.Run(() => AntVaultClient.SendMessage("/ServerStatus?"));
-                Task.Run(() => App.Current.Dispatcher.Invoke(() =>
+                Task.Run(() => Console.WriteLine("Requested server's status"));
+                Task.Run(() => Application.Current.Dispatcher.Invoke(() =>
                 {
                     WindowController.LoginPage.ConnectButton.Content = "Loading...";
                 })
@@ -49,13 +51,13 @@ namespace AntVault3_Client.ClientWorkers
             catch (Exception exc)
             {
                 Task.Run(() => Console.WriteLine("Could not connect to the server due to " + exc));
-                Task.Run(() => App.Current.Dispatcher.Invoke(() =>
+                Task.Run(() => Application.Current.Dispatcher.Invoke(() =>
                 {
-                    WindowController.LoginPage.ConnectButton.Content = "ERROR-Server offline, try to Vault later.";
+                    WindowController.LoginPage.StatusLabel.Content = "ERROR-Server offline, try to Vault later.";
                 })
                 );
-                await Task.Delay(1000);
-                await ConnectAsync();
+                Thread.Sleep(3000);
+                Connect();
             }
         }
 
@@ -168,6 +170,7 @@ namespace AntVault3_Client.ClientWorkers
 
         internal static void MessageReceived(SimpleSocketClient Client, string MessageString)
         {
+            Console.WriteLine("[DEBUG] " + MessageString);
             if (MessageString.StartsWith("/AcceptConnection"))
             {
                 MessageBox.Show("Authentication successfull!" + Environment.NewLine + "Entering the vault...", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -180,6 +183,7 @@ namespace AntVault3_Client.ClientWorkers
             if (MessageString.StartsWith("/ServerStatus"))
             {
                 string ServerStatus = App.AuxiliaryClientWorker.GetElement(MessageString, "/ServerStatus ", ";");
+                Console.WriteLine("Server's status is " + ServerStatus);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     WindowController.LoginPage.StatusLabel.Content = ServerStatus;

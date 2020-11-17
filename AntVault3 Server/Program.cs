@@ -11,6 +11,7 @@ namespace AntVault3_Server
         {
             ConfigDir = MainServerWorker.ConfigDir,
             AppName = "AntVault3_Server",
+            DefaultConfig = Properties.Resources.DefaultConfig
         };
         static void Main(string[] args)
         {

@@ -38,7 +38,7 @@ namespace AntVault3_Client.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoginMenuPlayer(true, null);
-            Task.Run(() => ClientNetworking.ConnectAsync());
+            Task.Run(() => ClientNetworking.Connect());
             Task.Run(() => MainClientWorker.CheckSoundEffects());
         }
 

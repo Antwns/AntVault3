@@ -18,6 +18,7 @@ namespace AntVault3_Client
         {
             ConfigDir = MainClientWorker.ConfigDir,
             AppName = "AntVault3_Client",
+            DefaultConfig = AntVault3_Client.Properties.Resources.DefaultConfig
         };
 
         internal static FlowDocument SortFriendsList()
