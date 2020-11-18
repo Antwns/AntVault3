@@ -212,7 +212,10 @@ namespace AntVault3_Client.ClientWorkers
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     WindowController.MainPage.MainChatTextBox.Document.Blocks.Add(App.AppendMessage(MessageString));
-                    WindowController.MainPage.PlayMessageSound();
+                    if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
+                    {
+                        WindowController.MainPage.PlayMessageSound();//Only play sound if minimized
+                    }
                 });
             }
             catch (Exception exc)

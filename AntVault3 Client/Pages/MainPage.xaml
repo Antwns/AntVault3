@@ -47,7 +47,7 @@
         <Ellipse x:Name="ProfilePicture" Grid.Column="2" Margin="0" Grid.Row="2" Stroke="White" Grid.RowSpan="2" StrokeThickness="3" StrokeDashArray="1 0" StrokeMiterLimit="0" Fill="White"/>
         <Label x:Name="UsernameLabel" Content="Username" Grid.Column="3" Margin="0" Grid.Row="2" Foreground="White" Grid.ColumnSpan="4" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="34" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}"/>
         <TabControl x:Name="MainTabMenu" x:FieldModifier="public" Grid.Column="1" Grid.Row="6" Grid.RowSpan="9" Grid.ColumnSpan="6" Background="{x:Null}" BorderBrush="White" Foreground="Black" BorderThickness="3">
-            <TabItem x:Name="GeneralChatTab" Header="General chat" BorderBrush="Black" Background="White" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" IsSelected="True">
+            <TabItem x:Name="GeneralChatTab" Header="General chat" BorderBrush="Black" Background="White" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" IsSelected="True" BorderThickness="2">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10*"/>
@@ -72,7 +72,7 @@
                     <TextBox x:Name="GeneralChatInputTextBox" Grid.Column="1" Margin="0" Grid.Row="3" TextWrapping="Wrap" Text="" Background="{x:Null}" BorderBrush="White" SelectionBrush="#FF497599" BorderThickness="3" VerticalContentAlignment="Center" FontSize="20" KeyDown="GeneralChatInputTextBox_KeyDown"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Friends list" BorderBrush="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft">
+            <TabItem Header="Friends list" BorderBrush="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" BorderThickness="2">
                 <TabItem.Background>
                     <SolidColorBrush Color="White"/>
                 </TabItem.Background>
@@ -95,7 +95,7 @@
                     <RichTextBox x:Name="FriendsListTextBox" x:FieldModifier="public" Grid.ColumnSpan="4" Grid.RowSpan="4" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionBrush="#FF6398C1" HorizontalScrollBarVisibility="Disabled" FontSize="25" Block.TextAlignment="Center" IsReadOnly="True" IsDocumentEnabled="True"/>
                 </Grid>
             </TabItem>
-            <TabItem BorderBrush="Black" Foreground="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Header="Settings">
+            <TabItem BorderBrush="Black" Foreground="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Header="Settings" BorderThickness="2">
                 <TabItem.Background>
                     <SolidColorBrush Color="White"/>
                 </TabItem.Background>
@@ -132,7 +132,7 @@
                     <Button x:Name="CreditsButton" Content="Credits" Grid.Row="7" BorderBrush="White" Foreground="White" BorderThickness="3" FontSize="20" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Background="{x:Null}" Margin="0,25" Grid.Column="3"/>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="MyPageTab" BorderBrush="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Header="My page">
+            <TabItem x:Name="MyPageTab" BorderBrush="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft" Header="My page" BorderThickness="2">
                 <TabItem.Background>
                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                         <GradientStop Color="#FFF0F0F0" Offset="0"/>
