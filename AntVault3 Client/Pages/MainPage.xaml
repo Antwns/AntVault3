@@ -141,17 +141,16 @@
                 </TabItem.Background>
                 <Grid Margin="0" Background="White">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="11*"/>
-                        <RowDefinition Height="11*"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="43*"/>
+                        <RowDefinition Height="111*"/>
                         <RowDefinition Height="10*"/>
-                        <RowDefinition Height="11*"/>
-                        <RowDefinition Height="11*"/>
-                        <RowDefinition Height="11*"/>
-                        <RowDefinition Height="11*"/>
-                        <RowDefinition Height="11*"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="95*"/>
+                        <RowDefinition Height="95*"/>
+                        <RowDefinition Height="95*"/>
+                        <RowDefinition Height="95*"/>
+                        <RowDefinition Height="95*"/>
+                        <RowDefinition Height="95*"/>
+                        <RowDefinition Height="10*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
@@ -164,12 +163,13 @@
                         <ColumnDefinition Width="50*"/>
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
-                    <Rectangle Fill="Black" Margin="0" Stroke="White" Grid.RowSpan="11"/>
-                    <Rectangle Fill="Black" Stroke="White" Grid.Column="8" Grid.RowSpan="11"/>
-                    <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7"/>
-                    <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7" Grid.Row="10"/>
-                    <Rectangle Grid.Column="1" Fill="Black" Grid.Row="3" Stroke="White" Grid.ColumnSpan="7"/>
-                    <RichTextBox x:Name="ProfilePageRichTextBox" Grid.Column="1" Grid.Row="4" Grid.RowSpan="6" Grid.ColumnSpan="7" Background="White" BorderBrush="Black" BorderThickness="3">
+                    <Rectangle Fill="Black" Margin="0" Stroke="White" Grid.RowSpan="10"/>
+                    <Rectangle Fill="Black" Stroke="White" Grid.Column="8" Grid.RowSpan="10"/>
+                    <Rectangle Fill="White" Stroke="Black" Grid.Column="1" Margin="0" Grid.ColumnSpan="7" StrokeThickness="3"/>
+                    <Rectangle Fill="Black" Stroke="White" Grid.Column="1" Margin="0" Grid.ColumnSpan="7" Grid.Row="9"/>
+                    <Rectangle Grid.Column="1" Fill="Black" Grid.Row="2" Stroke="White" Grid.ColumnSpan="7"/>
+                    <Rectangle x:FieldModifier="internal" x:Name="CoverPicture" Grid.Column="1" Margin="0" Grid.Row="1" Grid.ColumnSpan="7" Fill="#FFBFBFFF"/>
+                    <RichTextBox x:Name="ProfilePageRichTextBox" Grid.Column="1" Grid.Row="3" Grid.RowSpan="6" Grid.ColumnSpan="7" Background="White" BorderBrush="Black" BorderThickness="3">
                         <FlowDocument AllowDrop="False">
                             <Paragraph>
                                 <Run Text="Welcome to my page!"/>
@@ -179,22 +179,9 @@
                             </Paragraph>
                         </FlowDocument>
                     </RichTextBox>
-                    <Rectangle x:FieldModifier="internal" x:Name="CoverPicture" Grid.Column="1" Margin="0" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" Fill="#FFBFBFFF"/>
-                    <Image x:Name="LoadCoverButton" Grid.Column="7" Margin="25" Grid.Row="2" Source="/AntVault3 Client;component/Resources/LoadCover.png" ToolTip="Load new profile cover">
-                        <Image.OpacityMask>
-                            <SolidColorBrush Color="White" Opacity="0.5"/>
-                        </Image.OpacityMask>
-                    </Image>
-                    <Image x:Name="LoadRTFDoc" Grid.Column="7" Margin="25" Grid.Row="9" Source="/AntVault3 Client;component/Resources/LoadCover.png" ToolTip="Load new page content(.rtf document)">
-                        <Image.OpacityMask>
-                            <SolidColorBrush Color="White" Opacity="0.5"/>
-                        </Image.OpacityMask>
-                    </Image>
-                    <Image x:Name="SaveButton" Source="/AntVault3 Client;component/Resources/Save.png" Grid.Column="1" Margin="25" Grid.Row="1" ToolTip="Save page(And upload to server)">
-                        <Image.OpacityMask>
-                            <SolidColorBrush Color="White" Opacity="0.5"/>
-                        </Image.OpacityMask>
-                    </Image>
+                    <Button x:Name="ChangeCoverButton" Content="Change cover" Grid.Column="7" Margin="5,10" Background="White" BorderBrush="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft"/>
+                    <Button x:Name="Change_content" Content="Change content" Grid.Column="6" Margin="5,10" Background="White" BorderBrush="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft"/>
+                    <Button x:Name="SaveChangesButton" Content="Saved changes" Grid.Column="1" Margin="5,10" Background="White" BorderBrush="Black" FontFamily="/AntVault3 Client;component/Resources/#Minecraft"/>
                 </Grid>
             </TabItem>
         </TabControl>
