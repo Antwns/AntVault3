@@ -16,7 +16,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace AntVault3_Client.ClientWorkers
 {
-    public class MainClientWorker
+    public class MainClientWorker//Main client worker
     {
 
         static string CurrentStatus;
